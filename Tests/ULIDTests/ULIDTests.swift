@@ -1,15 +1,22 @@
-import XCTest
-@testable import ULID
+//
+//  ULIDTests.swift
+//  ULIDTests
+//
+//  Created by Yasuhiro Hatta on 2019/01/11.
+//
 
-final class ULID_swiftTests: XCTestCase {
+import XCTest
+import ULID
+
+final class ULIDTests: XCTestCase {
+
     func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(ULID_swift().text, "Hello, World!")
+        let ulid = ULID()
+        XCTAssertEqual(ulid.ulidString.count, 26)
     }
 
     static var allTests = [
-        ("testExample", testExample),
+        ("testExample", testExample)
     ]
+
 }
