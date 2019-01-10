@@ -1,5 +1,5 @@
 import XCTest
-@testable import ULID_swift
+@testable import ULID
 
 final class ULID_swiftTests: XCTestCase {
     func testExample() {
