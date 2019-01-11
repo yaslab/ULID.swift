@@ -71,3 +71,24 @@ public struct ULID {
     }
 
 }
+
+extension ULID: Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let string = try container.decode(String.self)
+
+        guard let ulid = ULID(ulidString: string) else {
+            throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: decoder.codingPath,
+                                                                    debugDescription: "Attempted to decode ULID from invalid ULID string."))
+        }
+
+        self = ulid
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.ulidString)
+    }
+
+}
