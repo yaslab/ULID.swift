@@ -48,15 +48,17 @@ enum Base32 {
 
 }
 
+enum Base32Error: Error {
+    case invalidCharacter
+}
+
 extension Data {
 
     /// Decode Crockford's Base32
     init?(base32Encoded base32String: String, using table: [Character: UInt8] = Base32.crockfordsDecodingTable) {
-        let str: [Character]
-        if let index = base32String.firstIndex(of: "=") {
-            str = Array(base32String[base32String.startIndex ..< index])
-        } else {
-            str = Array(base32String)
+        var str: [Character] = Array(base32String)
+        while let last = str.last, last == "=" {
+            str.removeLast()
         }
 
         let div = str.count / 8
@@ -66,39 +68,25 @@ extension Data {
 
         do {
             func unwrap(_ value: UInt8?) throws -> UInt8 {
-                guard let value = value else { throw NSError() }
+                guard let value = value else { throw Base32Error.invalidCharacter }
                 return value
             }
 
-            for i in 0 ..< div {
+            for i in 0 ... div {
+                if i == div, mod == 0 { break }
                 let offset = 8 * i
                 try buffer.append(unwrap(table[str[offset + 0]]) << 3 | unwrap(table[str[offset + 1]]) >> 2)
+                if i == div, mod == 2 { break }
                 try buffer.append(unwrap(table[str[offset + 1]]) << 6 | unwrap(table[str[offset + 2]]) << 1 | unwrap(table[str[offset + 3]]) >> 4)
+                if i == div, mod == 4 { break }
                 try buffer.append(unwrap(table[str[offset + 3]]) << 4 | unwrap(table[str[offset + 4]]) >> 1)
+                if i == div, mod == 5 { break }
                 try buffer.append(unwrap(table[str[offset + 4]]) << 7 | unwrap(table[str[offset + 5]]) << 2 | unwrap(table[str[offset + 6]]) >> 3)
+                if i == div, mod == 7 { break }
                 try buffer.append(unwrap(table[str[offset + 6]]) << 5 | unwrap(table[str[offset + 7]]))
             }
-
-            let offset = 8 * div
-            var tmp = Data()
-            switch mod {
-            case 7:
-                try tmp.append(unwrap(table[str[offset + 4]]) << 7 | unwrap(table[str[offset + 5]]) << 2 | unwrap(table[str[offset + 6]]) >> 3)
-                fallthrough
-            case 5:
-                try tmp.append(unwrap(table[str[offset + 3]]) << 4 | unwrap(table[str[offset + 4]]) >> 1)
-                fallthrough
-            case 4:
-                try tmp.append(unwrap(table[str[offset + 1]]) << 6 | unwrap(table[str[offset + 2]]) << 1 | unwrap(table[str[offset + 3]]) >> 4)
-                fallthrough
-            case 2:
-                try tmp.append(unwrap(table[str[offset + 0]]) << 3 | unwrap(table[str[offset + 1]]) >> 2)
-                buffer.append(contentsOf: tmp.reversed())
-            default:
-                break
-            }
         } catch {
-            fatalError()
+            return nil
         }
 
         self = buffer
@@ -110,49 +98,31 @@ extension Data {
         let mod = self.count % 5
 
         return self.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) in
-            var str = ""
+            var str = [Character]()
+            var pad = 0
 
-            for i in 0 ..< div {
+            for i in 0 ... div {
+                if i == div, mod == 0 { break }
                 let offset = 5 * i
                 str.append(table[Int((bytes[offset + 0]               >> 3))])
                 str.append(table[Int((bytes[offset + 0] & 0b00000111) << 2 | bytes[offset + 1] >> 6)])
+                if i == div, mod == 1 { pad = 6; break }
                 str.append(table[Int((bytes[offset + 1] & 0b00111110) >> 1)])
                 str.append(table[Int((bytes[offset + 1] & 0b00000001) << 4 | bytes[offset + 2] >> 4)])
+                if i == div, mod == 2 { pad = 4; break }
                 str.append(table[Int((bytes[offset + 2] & 0b00001111) << 1 | bytes[offset + 3] >> 7)])
+                if i == div, mod == 3 { pad = 3; break }
                 str.append(table[Int((bytes[offset + 3] & 0b01111100) >> 2)])
                 str.append(table[Int((bytes[offset + 3] & 0b00000011) << 3 | bytes[offset + 4] >> 5)])
+                if i == div, mod == 4 { pad = 1; break }
                 str.append(table[Int((bytes[offset + 4] & 0b00011111))])
             }
 
-            let offset = 5 * div
-            var tmp = ""
-            var pad = 7
-            switch mod {
-            case 4:
-                tmp.append(table[Int((bytes[offset + 3] & 0b00000011) << 3)])
-                tmp.append(table[Int((bytes[offset + 3] & 0b01111100) >> 2)])
-                pad -= 2
-                fallthrough
-            case 3:
-                tmp.append(table[Int((bytes[offset + 2] & 0b00001111) << 1 | bytes[offset + 3] >> 7)])
-                pad -= 1
-                fallthrough
-            case 2:
-                tmp.append(table[Int((bytes[offset + 1] & 0b00000001) << 4 | bytes[offset + 2] >> 4)])
-                tmp.append(table[Int((bytes[offset + 1] & 0b00111110) >> 1)])
-                pad -= 2
-                fallthrough
-            case 1:
-                tmp.append(table[Int((bytes[offset + 0] & 0b00000111) << 2 | bytes[offset + 1] >> 6)])
-                tmp.append(table[Int((bytes[offset + 0]               >> 3))])
-                pad -= 1
-                str.append(contentsOf: tmp.reversed())
-                str.append(String(repeating: "=", count: pad))
-            default:
-                break
+            for _ in 0 ..< pad {
+                str.append("=")
             }
 
-            return str
+            return String(str)
         }
     }
 

@@ -84,11 +84,20 @@ final class ULIDTests: XCTestCase {
         XCTAssertEqual(26, ulid.ulidString.count)
     }
 
-    func testHashable() {
+    func testHashable1() {
         // Note: Hash values are not guaranteed to be equal across different executions.
         let ulid1 = ULID()
         let ulid2 = ULID(ulid: ulid1.ulid)
         XCTAssertEqual(ulid1.hashValue, ulid2.hashValue)
+    }
+
+    func testHashable2() {
+        let timestamp = Date(timeIntervalSince1970: 1547213173.513)
+
+        let ulid1 = ULID(timestamp: timestamp)
+        let ulid2 = ULID(timestamp: timestamp)
+
+        XCTAssertNotEqual(ulid1.hashValue, ulid2.hashValue)
     }
 
     func testEquatable1() {
@@ -158,7 +167,8 @@ final class ULIDTests: XCTestCase {
         ("testParseULIDData", testParseULIDData),
         ("testULIDDataLength", testULIDDataLength),
         ("testULIDStringLength", testULIDStringLength),
-        ("testHashable", testHashable),
+        ("testHashable1", testHashable1),
+        ("testHashable2", testHashable2),
         ("testEquatable1", testEquatable1),
         ("testEquatable2", testEquatable2),
         ("testCustomStringConvertible", testCustomStringConvertible),
