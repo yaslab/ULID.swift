@@ -147,12 +147,24 @@ final class ULIDTests: XCTestCase {
         }
     }
 
-    func testExample() {
-
+    func testMemorySize() {
+        XCTAssertEqual(16, MemoryLayout<ULID>.size)
     }
 
     static var allTests = [
-        ("testExample", testExample)
+        ("testGenerateTimestamp", testGenerateTimestamp),
+        ("testGenerateRandomness", testGenerateRandomness),
+        ("testParseULIDString", testParseULIDString),
+        ("testParseULIDData", testParseULIDData),
+        ("testULIDDataLength", testULIDDataLength),
+        ("testULIDStringLength", testULIDStringLength),
+        ("testHashable", testHashable),
+        ("testEquatable1", testEquatable1),
+        ("testEquatable2", testEquatable2),
+        ("testCustomStringConvertible", testCustomStringConvertible),
+        ("testDecodable", testDecodable),
+        ("testEncodable", testEncodable),
+        ("testMemorySize", testMemorySize)
     ]
 
 }

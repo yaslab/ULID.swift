@@ -1,7 +1,6 @@
 import XCTest
-
-import ULID_swiftTests
+import ULIDTests
 
 var tests = [XCTestCaseEntry]()
-tests += ULID_swiftTests.allTests()
+tests += ULIDTests.allTests()
 XCTMain(tests)
