@@ -37,6 +37,8 @@ final class ULIDTests: XCTestCase {
         let ulid1 = ULID(timestamp: timestamp)
         let ulid2 = ULID(timestamp: timestamp)
 
+        XCTAssertEqual(ulid1.timestamp, ulid2.timestamp)
+
         XCTAssertFalse(
             ulid1.ulid.6 == ulid2.ulid.6 &&
             ulid1.ulid.7 == ulid2.ulid.7 &&
@@ -89,13 +91,22 @@ final class ULIDTests: XCTestCase {
         XCTAssertEqual(ulid1.hashValue, ulid2.hashValue)
     }
 
-    func testEquatable() {
+    func testEquatable1() {
         let timestamp = Date(timeIntervalSince1970: 1547213173.513)
 
         let ulid1 = ULID(timestamp: timestamp)
         let ulid2 = ULID(ulid: ulid1.ulid)
 
         XCTAssertEqual(ulid1, ulid2)
+    }
+
+    func testEquatable2() {
+        let timestamp = Date(timeIntervalSince1970: 1547213173.513)
+
+        let ulid1 = ULID(timestamp: timestamp)
+        let ulid2 = ULID(timestamp: timestamp)
+
+        XCTAssertNotEqual(ulid1, ulid2)
     }
 
     func testCustomStringConvertible() {

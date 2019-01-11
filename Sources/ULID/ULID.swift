@@ -17,21 +17,6 @@ public struct ULID: Hashable, Equatable, CustomStringConvertible {
         self.ulid = ulid
     }
 
-    public init(timestamp: Date = Date()) {
-        withUnsafeMutableBytes(of: &ulid) { (buffer) in
-            var millisec = UInt64(timestamp.timeIntervalSince1970 * 1000.0).bigEndian
-            withUnsafeBytes(of: &millisec) {
-                for i in 0 ..< 6 {
-                    buffer[i] = $0[2 + i]
-                }
-            }
-            let range = UInt8.min ... .max
-            for i in 6 ..< 16 {
-                buffer[i] = UInt8.random(in: range)
-            }
-        }
-    }
-
     public init?(ulidData data: Data) {
         guard data.count == 16 else {
             return nil
@@ -48,15 +33,18 @@ public struct ULID: Hashable, Equatable, CustomStringConvertible {
         self.init(ulidData: data.dropFirst(4))
     }
 
-    public var timestamp: Date {
-        return withUnsafeBytes(of: ulid) { (buffer) in
-            var millisec: UInt64 = 0
-            withUnsafeMutableBytes(of: &millisec) {
+    public init(timestamp: Date = Date()) {
+        withUnsafeMutableBytes(of: &ulid) { (buffer) in
+            var millisec = UInt64(timestamp.timeIntervalSince1970 * 1000.0).bigEndian
+            withUnsafeBytes(of: &millisec) {
                 for i in 0 ..< 6 {
-                    $0[2 + i] = buffer[i]
+                    buffer[i] = $0[2 + i]
                 }
             }
-            return Date(timeIntervalSince1970: TimeInterval(millisec.bigEndian) / 1000.0)
+            let range = UInt8.min ... .max
+            for i in 6 ..< 16 {
+                buffer[i] = UInt8.random(in: range)
+            }
         }
     }
 
@@ -68,6 +56,18 @@ public struct ULID: Hashable, Equatable, CustomStringConvertible {
 
     public var ulidString: String {
         return String((Data(count: 4) + ulidData).base32EncodedString().dropFirst(6))
+    }
+
+    public var timestamp: Date {
+        return withUnsafeBytes(of: ulid) { (buffer) in
+            var millisec: UInt64 = 0
+            withUnsafeMutableBytes(of: &millisec) {
+                for i in 0 ..< 6 {
+                    $0[2 + i] = buffer[i]
+                }
+            }
+            return Date(timeIntervalSince1970: TimeInterval(millisec.bigEndian) / 1000.0)
+        }
     }
 
     public func hash(into hasher: inout Hasher) {
