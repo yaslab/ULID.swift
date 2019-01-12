@@ -14,5 +14,4 @@ Pod::Spec.new do |spec|
   spec.osx.deployment_target      = '10.9'
 
   spec.module_name   = 'ULID'
-  spec.swift_version = '4.2'
 end
