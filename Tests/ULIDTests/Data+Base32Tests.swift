@@ -194,11 +194,34 @@ final class Base32Tests: XCTestCase {
         }
     }
 
+    func testDecodeInvalidCharacter() {
+        let invalidCharacters = ["U", "u", "*", "~", "$", "="]
+
+        for char in invalidCharacters {
+            let data = Data(base32Encoded: char + "0")
+            XCTAssertNil(data)
+        }
+    }
+
     // MARK: -
 
     static var allTests = [
         ("testEncodeBase32", testEncodeBase32),
-        ("testDecodeBase32", testDecodeBase32)
+        ("testEncode1", testEncode1),
+        ("testEncode2", testEncode2),
+        ("testEncode3", testEncode3),
+        ("testEncode4", testEncode4),
+        ("testEncode5", testEncode5),
+        ("testEncode6", testEncode6),
+        ("testEncode7", testEncode7),
+        ("testEncode8", testEncode8),
+        ("testEncodePad1", testEncodePad1),
+        ("testEncodePad2", testEncodePad2),
+        ("testEncodePad3", testEncodePad3),
+        ("testEncodePad4", testEncodePad4),
+        ("testDecodeBase32", testDecodeBase32),
+        ("testDecodeTable", testDecodeTable),
+        ("testDecodeInvalidCharacter", testDecodeInvalidCharacter)
     ]
 
 }
