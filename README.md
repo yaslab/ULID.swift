@@ -10,6 +10,8 @@ Implementation of [ULID](https://github.com/ulid/spec/blob/master/README.md) in 
 ### Generate ULID
 
 ```swift
+import ULID
+
 // Generate ULID using current time
 let ulid = ULID()
 
@@ -22,6 +24,8 @@ let data: Data = ulid.ulidData
 ### Parse ULID
 
 ```swift
+import ULID
+
 // Parse ULID string
 let ulid = ULID(ulidString: "01D0YHEWR9WMPY4NNTPK1MR1TQ")!
 
