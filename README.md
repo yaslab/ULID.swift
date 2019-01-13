@@ -23,7 +23,7 @@ let data: Data = ulid.ulidData
 
 ```swift
 // Parse ULID string
-let ulid = ULID(ulidString: "01D0YHEWR9WMPY4NNTPK1MR1TQ")
+let ulid = ULID(ulidString: "01D0YHEWR9WMPY4NNTPK1MR1TQ")!
 
 // Get Timestamp as Date
 let timestamp: Date = ulid.timestamp
