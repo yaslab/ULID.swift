@@ -3,6 +3,7 @@
 //  ULIDTests
 //
 //  Created by Yasuhiro Hatta on 2019/01/12.
+//  Copyright © 2019 yaslab. All rights reserved.
 //
 
 import XCTest
