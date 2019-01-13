@@ -33,6 +33,32 @@ let ulid = ULID(ulidString: "01D0YHEWR9WMPY4NNTPK1MR1TQ")!
 let timestamp: Date = ulid.timestamp
 ```
 
+### Convert between ULID and UUID
+
+Both ULID and UUID are 128 bit data, so you can convert strings to each other.
+
+#### From ULID to UUID
+
+```swift
+import Foundation
+import ULID
+
+let ulid = ULID(ulidString: "01D132CXJVYQ7091KZPZR5WH1X")!
+let uuid = UUID(uuid: ulid.ulid)
+print(uuid.uuidString) // 01684626-765B-F5CE-0486-7FB7F05E443D
+```
+
+#### From UUID to ULID
+
+```swift
+import Foundation
+import ULID
+
+let uuid = UUID(uuidString: "01684626-765B-F5CE-0486-7FB7F05E443D")!
+let ulid = ULID(ulid: uuid.uuid)
+print(ulid.ulidString) // 01D132CXJVYQ7091KZPZR5WH1X
+```
+
 ## Installation
 
 ### CocoaPods
