@@ -101,6 +101,15 @@ final class ULIDTests: XCTestCase {
         XCTAssertNotEqual(ulid1.hashValue, ulid2.hashValue)
     }
 
+    func testHashable3() {
+        let ulid1 = ULID()
+        let ulid2 = ULID()
+        let map = [ulid1: 1, ulid2: 2]
+
+        XCTAssertEqual(1, map[ulid1]!)
+        XCTAssertEqual(2, map[ulid2]!)
+    }
+
     func testEquatable1() {
         let timestamp = Date(timeIntervalSince1970: 1547213173.513)
 
@@ -117,6 +126,36 @@ final class ULIDTests: XCTestCase {
         let ulid2 = ULID(timestamp: timestamp)
 
         XCTAssertNotEqual(ulid1, ulid2)
+    }
+
+    func testComparable1() {
+        let lhs = ULID(ulid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+        let rhs = ULID(ulid: (0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+        XCTAssertTrue(lhs < rhs)
+        XCTAssertFalse(lhs > rhs)
+    }
+
+    func testComparable2() {
+        let lhs = ULID(ulid: (0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+        let rhs = ULID(ulid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+        XCTAssertFalse(lhs < rhs)
+        XCTAssertTrue(lhs > rhs)
+    }
+
+    func testComparable3() {
+        let now = Date()
+        let ulid0 = ULID(timestamp: now.addingTimeInterval(-120))
+        let ulid1 = ULID(timestamp: now.addingTimeInterval(-60))
+        let ulid2 = ULID(timestamp: now)
+        let ulid3 = ULID(timestamp: now.addingTimeInterval(60))
+        let ulid4 = ULID(timestamp: now.addingTimeInterval(120))
+        let sorted = [ulid2, ulid0, ulid3, ulid4, ulid1].sorted()
+
+        XCTAssertEqual(ulid0, sorted[0])
+        XCTAssertEqual(ulid1, sorted[1])
+        XCTAssertEqual(ulid2, sorted[2])
+        XCTAssertEqual(ulid3, sorted[3])
+        XCTAssertEqual(ulid4, sorted[4])
     }
 
     func testCustomStringConvertible() {
@@ -170,8 +209,12 @@ final class ULIDTests: XCTestCase {
         ("testULIDStringLength", testULIDStringLength),
         ("testHashable1", testHashable1),
         ("testHashable2", testHashable2),
+        ("testHashable3", testHashable3),
         ("testEquatable1", testEquatable1),
         ("testEquatable2", testEquatable2),
+        ("testComparable1", testComparable1),
+        ("testComparable2", testComparable2),
+        ("testComparable3", testComparable3),
         ("testCustomStringConvertible", testCustomStringConvertible),
         ("testDecodable", testDecodable),
         ("testEncodable", testEncodable),

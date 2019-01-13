@@ -10,7 +10,7 @@ import Foundation
 
 public typealias ulid_t = uuid_t
 
-public struct ULID: Hashable, Equatable, CustomStringConvertible {
+public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
 
     public private(set) var ulid: ulid_t = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
@@ -90,7 +90,7 @@ public struct ULID: Hashable, Equatable, CustomStringConvertible {
         hasher.combine(ulid.15)
     }
 
-    public static func ==(lhs: ULID, rhs: ULID) -> Bool {
+    public static func == (lhs: ULID, rhs: ULID) -> Bool {
         return lhs.ulid.0 == rhs.ulid.0
             && lhs.ulid.1 == rhs.ulid.1
             && lhs.ulid.2 == rhs.ulid.2
@@ -107,6 +107,25 @@ public struct ULID: Hashable, Equatable, CustomStringConvertible {
             && lhs.ulid.13 == rhs.ulid.13
             && lhs.ulid.14 == rhs.ulid.14
             && lhs.ulid.15 == rhs.ulid.15
+    }
+
+    public static func < (lhs: ULID, rhs: ULID) -> Bool {
+        if lhs.ulid.0 != rhs.ulid.0 { return lhs.ulid.0 < rhs.ulid.0 }
+        if lhs.ulid.1 != rhs.ulid.1 { return lhs.ulid.1 < rhs.ulid.1 }
+        if lhs.ulid.2 != rhs.ulid.2 { return lhs.ulid.2 < rhs.ulid.2 }
+        if lhs.ulid.3 != rhs.ulid.3 { return lhs.ulid.3 < rhs.ulid.3 }
+        if lhs.ulid.4 != rhs.ulid.4 { return lhs.ulid.4 < rhs.ulid.4 }
+        if lhs.ulid.5 != rhs.ulid.5 { return lhs.ulid.5 < rhs.ulid.5 }
+        if lhs.ulid.6 != rhs.ulid.6 { return lhs.ulid.6 < rhs.ulid.6 }
+        if lhs.ulid.7 != rhs.ulid.7 { return lhs.ulid.7 < rhs.ulid.7 }
+        if lhs.ulid.8 != rhs.ulid.8 { return lhs.ulid.8 < rhs.ulid.8 }
+        if lhs.ulid.9 != rhs.ulid.9 { return lhs.ulid.9 < rhs.ulid.9 }
+        if lhs.ulid.10 != rhs.ulid.10 { return lhs.ulid.10 < rhs.ulid.10 }
+        if lhs.ulid.11 != rhs.ulid.11 { return lhs.ulid.11 < rhs.ulid.11 }
+        if lhs.ulid.12 != rhs.ulid.12 { return lhs.ulid.12 < rhs.ulid.12 }
+        if lhs.ulid.13 != rhs.ulid.13 { return lhs.ulid.13 < rhs.ulid.13 }
+        if lhs.ulid.14 != rhs.ulid.14 { return lhs.ulid.14 < rhs.ulid.14 }
+        return lhs.ulid.15 < rhs.ulid.15
     }
 
     public var description: String {
