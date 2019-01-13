@@ -43,7 +43,7 @@ extension Data {
             base32String.removeLast()
         }
 
-        let result: Data? = base32String.withCString(encodedAs: Unicode.ASCII.self) { (src) in
+        let result: Data? = base32String.withCString(encodedAs: Unicode.UTF8.self) { (src) in
             func _strlen(_ str: UnsafePointer<UInt8>) -> Int {
                 var str = str
                 var i = 0

@@ -130,13 +130,13 @@ final class ULIDTests: XCTestCase {
 
     func testComparable1() {
         let lhs = ULID(ulid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
-        let rhs = ULID(ulid: (0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+        let rhs = ULID(ulid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1))
         XCTAssertTrue(lhs < rhs)
         XCTAssertFalse(lhs > rhs)
     }
 
     func testComparable2() {
-        let lhs = ULID(ulid: (0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+        let lhs = ULID(ulid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1))
         let rhs = ULID(ulid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
         XCTAssertFalse(lhs < rhs)
         XCTAssertTrue(lhs > rhs)

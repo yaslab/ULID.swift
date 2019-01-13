@@ -31,7 +31,9 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
         guard string.count == 26, let data = Data(base32Encoded: "000000" + string) else {
             return nil
         }
-        self.init(ulidData: data.dropFirst(4))
+        withUnsafeMutableBytes(of: &ulid) {
+            $0.copyBytes(from: data.dropFirst(4))
+        }
     }
 
     public init(timestamp: Date = Date()) {

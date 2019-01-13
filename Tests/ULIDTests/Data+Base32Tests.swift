@@ -134,6 +134,15 @@ final class Base32Tests: XCTestCase {
         XCTAssertEqual("GGGGGGG=", data.base32EncodedString())
     }
 
+    func testEncodeNoPad() {
+        let bytes: [UInt8] = [
+            0b10000100
+        ]
+        let data = Data(bytes: bytes)
+
+        XCTAssertEqual("GG", data.base32EncodedString(padding: false))
+    }
+
     // MARK: -
     // MARK: Decode
 
@@ -203,6 +212,18 @@ final class Base32Tests: XCTestCase {
         }
     }
 
+    func testDecodePadding() {
+        let data = Data(base32Encoded: "AM======")
+        XCTAssertNotNil(data)
+        XCTAssertEqual(1, data!.count)
+        XCTAssertEqual(0b01010101, data![0])
+    }
+
+    func testDecodeIncorrectLength() {
+        let data = Data(base32Encoded: "0")
+        XCTAssertNil(data)
+    }
+
     // MARK: -
 
     static var allTests = [
@@ -219,9 +240,12 @@ final class Base32Tests: XCTestCase {
         ("testEncodePad2", testEncodePad2),
         ("testEncodePad3", testEncodePad3),
         ("testEncodePad4", testEncodePad4),
+        ("testEncodeNoPad", testEncodeNoPad),
         ("testDecodeBase32", testDecodeBase32),
         ("testDecodeTable", testDecodeTable),
-        ("testDecodeInvalidCharacter", testDecodeInvalidCharacter)
+        ("testDecodeInvalidCharacter", testDecodeInvalidCharacter),
+        ("testDecodePadding", testDecodePadding),
+        ("testDecodeIncorrectLength", testDecodeIncorrectLength)
     ]
 
 }
