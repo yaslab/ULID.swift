@@ -12,7 +12,7 @@ enum Base32 {
     static let crockfordsEncodingTable: [UInt8] = "0123456789ABCDEFGHJKMNPQRSTVWXYZ".utf8.map({ $0 })
 
     static let crockfordsDecodingTable: [UInt8] = [
-        // 0     1     2     3     4     5     6     7     8     9    a      b     c     d     e     f
+        // 0     1     2     3     4     5     6     7     8     9     a     b     c     d     e     f
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // 0
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // 1
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // 2
@@ -33,43 +33,36 @@ enum Base32 {
 
 }
 
-enum Base32Error: Error {
-    case invalidCharacter
-}
-
 extension Data {
 
     /// Decode Crockford's Base32
     init?(base32Encoded base32String: String, using table: [UInt8] = Base32.crockfordsDecodingTable) {
-        guard base32String.unicodeScalars.allSatisfy({ $0.isASCII }) else {
-            return nil
-        }
-
         var base32String = base32String
         while let last = base32String.last, last == "=" {
             base32String.removeLast()
         }
-        guard [0, 2, 4, 5, 7].contains(base32String.count % 8) else {
-            return nil
-        }
 
-        let dstlen = base32String.count * 5 / 8
-
-        var buffer = Data(count: dstlen)
-
-        let success: Bool = buffer.withUnsafeMutableBytes { (dst: UnsafeMutablePointer<UInt8>) in
-            base32String.withCString(encodedAs: Unicode.ASCII.self) { (src) in
-                func _strlen(_ str: UnsafePointer<UInt8>) -> Int {
-                    var str = str
-                    var i = 0
-                    while str.pointee != 0 {
-                        str += 1
-                        i += 1
-                    }
-                    return i
+        let result: Data? = base32String.withCString(encodedAs: Unicode.ASCII.self) { (src) in
+            func _strlen(_ str: UnsafePointer<UInt8>) -> Int {
+                var str = str
+                var i = 0
+                while str.pointee != 0 {
+                    str += 1
+                    i += 1
                 }
+                return i
+            }
 
-                var srcleft = _strlen(src)
+            let srclen = _strlen(src)
+            guard [0, 2, 4, 5, 7].contains(srclen % 8) else {
+                return nil
+            }
+
+            let dstlen = srclen * 5 / 8
+
+            var buffer = Data(count: dstlen)
+            let success: Bool = buffer.withUnsafeMutableBytes { (dst: UnsafeMutablePointer<UInt8>) in
+                var srcleft = srclen
                 var srcp = src
 
                 var dstp = dst
@@ -112,12 +105,19 @@ extension Data {
 
                 return true
             }
+
+            guard success else {
+                return nil
+            }
+
+            return buffer
         }
-        guard success else {
+
+        guard let data = result else {
             return nil
         }
 
-        self = buffer
+        self = data
     }
 
     /// Encode Crockford's Base32
