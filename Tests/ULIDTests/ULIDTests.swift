@@ -35,23 +35,21 @@ final class ULIDTests: XCTestCase {
 
     func testGenerateRandomness() {
         let timestamp = Date(timeIntervalSince1970: 1547213173.513)
-        let ulid1 = ULID(timestamp: timestamp)
-        let ulid2 = ULID(timestamp: timestamp)
+        var generator = MockRandomNumberGenerator(value: 0x1122334455667788)
+        let actual = ULID(timestamp: timestamp, generator: &generator)
 
-        XCTAssertEqual(ulid1.timestamp, ulid2.timestamp)
+        XCTAssertEqual(timestamp, actual.timestamp)
 
-        XCTAssertFalse(
-            ulid1.ulid.6 == ulid2.ulid.6 &&
-            ulid1.ulid.7 == ulid2.ulid.7 &&
-            ulid1.ulid.8 == ulid2.ulid.8 &&
-            ulid1.ulid.9 == ulid2.ulid.9 &&
-            ulid1.ulid.10 == ulid2.ulid.10 &&
-            ulid1.ulid.11 == ulid2.ulid.11 &&
-            ulid1.ulid.12 == ulid2.ulid.12 &&
-            ulid1.ulid.13 == ulid2.ulid.13 &&
-            ulid1.ulid.14 == ulid2.ulid.14 &&
-            ulid1.ulid.15 == ulid2.ulid.15
-        )
+        XCTAssertEqual(0x77, actual.ulid.6)
+        XCTAssertEqual(0x88, actual.ulid.7)
+        XCTAssertEqual(0x11, actual.ulid.8)
+        XCTAssertEqual(0x22, actual.ulid.9)
+        XCTAssertEqual(0x33, actual.ulid.10)
+        XCTAssertEqual(0x44, actual.ulid.11)
+        XCTAssertEqual(0x55, actual.ulid.12)
+        XCTAssertEqual(0x66, actual.ulid.13)
+        XCTAssertEqual(0x77, actual.ulid.14)
+        XCTAssertEqual(0x88, actual.ulid.15)
     }
 
     func testParseULIDString() {
@@ -220,5 +218,15 @@ final class ULIDTests: XCTestCase {
         ("testEncodable", testEncodable),
         ("testMemorySize", testMemorySize)
     ]
+
+}
+
+private struct MockRandomNumberGenerator: RandomNumberGenerator {
+
+    let value: UInt64
+
+    mutating func next() -> UInt64 {
+        return value
+    }
 
 }

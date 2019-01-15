@@ -36,19 +36,36 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
         }
     }
 
-    public init(timestamp: Date = Date()) {
+    public init<T: RandomNumberGenerator>(timestamp: Date, generator: inout T) {
         withUnsafeMutableBytes(of: &ulid) { (buffer) in
+            var i = 0
             var millisec = UInt64(timestamp.timeIntervalSince1970 * 1000.0).bigEndian
             withUnsafeBytes(of: &millisec) {
-                for i in 0 ..< 6 {
-                    buffer[i] = $0[2 + i]
+                for j in 2 ..< 8 {
+                    buffer[i] = $0[j]
+                    i += 1
                 }
             }
-            let range = UInt8.min ... .max
-            for i in 6 ..< 16 {
-                buffer[i] = UInt8.random(in: range)
+            var random16 = UInt16.random(in: .min ... .max, using: &generator).bigEndian
+            withUnsafeBytes(of: &random16) {
+                for j in 0 ..< 2 {
+                    buffer[i] = $0[j]
+                    i += 1
+                }
+            }
+            var random64 = UInt64.random(in: .min ... .max, using: &generator).bigEndian
+            withUnsafeBytes(of: &random64) {
+                for j in 0 ..< 8 {
+                    buffer[i] = $0[j]
+                    i += 1
+                }
             }
         }
+    }
+
+    public init(timestamp: Date = Date()) {
+        var g = SystemRandomNumberGenerator()
+        self.init(timestamp: timestamp, generator: &g)
     }
 
     public var ulidData: Data {
