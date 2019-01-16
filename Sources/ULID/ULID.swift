@@ -75,7 +75,11 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
     }
 
     public var ulidString: String {
-        return String((Data(count: 4) + ulidData).base32EncodedString().dropFirst(6))
+        return withUnsafeBytes(of: ulid) {
+            var data = Data(count: 4)
+            data.append($0.bindMemory(to: UInt8.self))
+            return String(data.base32EncodedString().dropFirst(6))
+        }
     }
 
     public var timestamp: Date {
