@@ -62,11 +62,11 @@ extension Data {
             let dstlen = srclen * 5 / 8
 
             var buffer = Data(count: dstlen)
-            let success: Bool = buffer.withUnsafeMutableBytes { (dst: UnsafeMutablePointer<UInt8>) in
+            let success: Bool = buffer.withUnsafeMutableBytes { (dst: UnsafeMutableRawBufferPointer) -> Bool in
                 var srcleft = srclen
                 var srcp = src
 
-                var dstp = dst
+                var dsti: UnsafeMutableRawBufferPointer.Index = 0
 
                 let work = UnsafeMutablePointer<UInt8>.allocate(capacity: 8)
                 defer { work.deallocate() }
@@ -82,26 +82,26 @@ extension Data {
 
                     switch worklen {
                     case 8:
-                        dstp[4] = (work[6] << 5) | (work[7]     )
+                        dst[dsti + 4] = (work[6] << 5) | (work[7]     )
                         fallthrough
                     case 7:
-                        dstp[3] = (work[4] << 7) | (work[5] << 2) | (work[6] >> 3)
+                        dst[dsti + 3] = (work[4] << 7) | (work[5] << 2) | (work[6] >> 3)
                         fallthrough
                     case 5:
-                        dstp[2] = (work[3] << 4) | (work[4] >> 1)
+                        dst[dsti + 2] = (work[3] << 4) | (work[4] >> 1)
                         fallthrough
                     case 4:
-                        dstp[1] = (work[1] << 6) | (work[2] << 1) | (work[3] >> 4)
+                        dst[dsti + 1] = (work[1] << 6) | (work[2] << 1) | (work[3] >> 4)
                         fallthrough
                     case 2:
-                        dstp[0] = (work[0] << 3) | (work[1] >> 2)
+                        dst[dsti + 0] = (work[0] << 3) | (work[1] >> 2)
                     default:
                         break
                     }
 
                     srcp += 8
                     srcleft -= 8
-                    dstp += 5
+                    dsti += 5
                 }
 
                 return true
@@ -133,8 +133,8 @@ extension Data {
         }
         var dstleft = dstlen
 
-        return self.withUnsafeBytes { (src: UnsafePointer<UInt8>) in
-            var srcp = src
+        return self.withUnsafeBytes { (src: UnsafeRawBufferPointer) -> String in
+            var srci: UnsafeRawBufferPointer.Index = 0
 
             let dst = UnsafeMutablePointer<UInt8>.allocate(capacity: dstlen + 1)
             var dstp = dst
@@ -146,26 +146,26 @@ extension Data {
             while srcleft > 0 {
                 switch srcleft {
                 case _ where 5 <= srcleft:
-                    work[7]  = srcp[4]
-                    work[6]  = srcp[4] >> 5
+                    work[7]  = src[srci + 4]
+                    work[6]  = src[srci + 4] >> 5
                     fallthrough
                 case 4:
-                    work[6] |= srcp[3] << 3
-                    work[5]  = srcp[3] >> 2
-                    work[4]  = srcp[3] >> 7
+                    work[6] |= src[srci + 3] << 3
+                    work[5]  = src[srci + 3] >> 2
+                    work[4]  = src[srci + 3] >> 7
                     fallthrough
                 case 3:
-                    work[4] |= srcp[2] << 1
-                    work[3]  = srcp[2] >> 4
+                    work[4] |= src[srci + 2] << 1
+                    work[3]  = src[srci + 2] >> 4
                     fallthrough
                 case 2:
-                    work[3] |= srcp[1] << 4
-                    work[2]  = srcp[1] >> 1
-                    work[1]  = srcp[1] >> 6
+                    work[3] |= src[srci + 1] << 4
+                    work[2]  = src[srci + 1] >> 1
+                    work[1]  = src[srci + 1] >> 6
                     fallthrough
                 case 1:
-                    work[1] |= srcp[0] << 2
-                    work[0]  = srcp[0] >> 3
+                    work[1] |= src[srci + 0] << 2
+                    work[0]  = src[srci + 0] >> 3
                 default:
                     break
                 }
@@ -197,7 +197,7 @@ extension Data {
                     break
                 }
 
-                srcp += 5
+                srci += 5
                 srcleft -= 5
                 dstp += 8
                 dstleft -= 8

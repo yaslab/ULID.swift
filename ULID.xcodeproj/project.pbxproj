@@ -214,6 +214,7 @@
 				TargetAttributes = {
 					0ED32BE521E96A7B00430998 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					0ED32C0521E96CA200430998 = {
 						CreatedOnToolsVersion = 10.1;
@@ -229,6 +230,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 0ED32BDC21E96A7B00430998;
 			productRefGroup = 0ED32BE721E96A7B00430998 /* Products */;
@@ -449,7 +451,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.yaslab.ULID;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -473,7 +475,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.yaslab.ULID;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
