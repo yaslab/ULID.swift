@@ -67,7 +67,7 @@ final class ULIDTests: XCTestCase {
             0xE2, 0x56, 0xBA, 0xB4, 0xC3, 0x4C, 0x07, 0x57
         ]
 
-        let actual = ULID(ulidData: Data(bytes: expected))
+        let actual = ULID(ulidData: Data(expected))
 
         XCTAssertNotNil(actual)
         XCTAssertEqual(expected, Array(actual!.ulidData))

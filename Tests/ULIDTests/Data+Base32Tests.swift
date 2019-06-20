@@ -21,7 +21,7 @@ final class Base32Tests: XCTestCase {
             0x00, 0x00, 0x00, 0x00, 0x01, 0x68, 0x3D, 0xD4, 0x19, 0x86,
             0xFE, 0xB3, 0xF9, 0x57, 0xAF, 0x8B, 0x6F, 0x46, 0x79, 0x77
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual(expected, data.base32EncodedString())
     }
@@ -30,7 +30,7 @@ final class Base32Tests: XCTestCase {
         let bytes: [UInt8] = [
             0b11111000, 0b00000000, 0b00000000, 0b00000000, 0b00000000
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual("Z0000000", data.base32EncodedString())
     }
@@ -39,7 +39,7 @@ final class Base32Tests: XCTestCase {
         let bytes: [UInt8] = [
             0b00000111, 0b11000000, 0b00000000, 0b00000000, 0b00000000
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual("0Z000000", data.base32EncodedString())
     }
@@ -48,7 +48,7 @@ final class Base32Tests: XCTestCase {
         let bytes: [UInt8] = [
             0b00000000, 0b00111110, 0b00000000, 0b00000000, 0b00000000
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual("00Z00000", data.base32EncodedString())
     }
@@ -57,7 +57,7 @@ final class Base32Tests: XCTestCase {
         let bytes: [UInt8] = [
             0b00000000, 0b00000001, 0b11110000, 0b00000000, 0b00000000
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual("000Z0000", data.base32EncodedString())
     }
@@ -66,7 +66,7 @@ final class Base32Tests: XCTestCase {
         let bytes: [UInt8] = [
             0b00000000, 0b00000000, 0b00001111, 0b10000000, 0b00000000
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual("0000Z000", data.base32EncodedString())
     }
@@ -75,7 +75,7 @@ final class Base32Tests: XCTestCase {
         let bytes: [UInt8] = [
             0b00000000, 0b00000000, 0b00000000, 0b01111100, 0b00000000
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual("00000Z00", data.base32EncodedString())
     }
@@ -84,7 +84,7 @@ final class Base32Tests: XCTestCase {
         let bytes: [UInt8] = [
             0b00000000, 0b00000000, 0b00000000, 0b00000011, 0b11100000
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual("000000Z0", data.base32EncodedString())
     }
@@ -93,7 +93,7 @@ final class Base32Tests: XCTestCase {
         let bytes: [UInt8] = [
             0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00011111
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual("0000000Z", data.base32EncodedString())
     }
@@ -102,7 +102,7 @@ final class Base32Tests: XCTestCase {
         let bytes: [UInt8] = [
             0b10000100
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual("GG======", data.base32EncodedString())
     }
@@ -111,7 +111,7 @@ final class Base32Tests: XCTestCase {
         let bytes: [UInt8] = [
             0b10000100, 0b00100001
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual("GGGG====", data.base32EncodedString())
     }
@@ -120,7 +120,7 @@ final class Base32Tests: XCTestCase {
         let bytes: [UInt8] = [
             0b10000100, 0b00100001, 0b00001000
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual("GGGGG===", data.base32EncodedString())
     }
@@ -129,7 +129,7 @@ final class Base32Tests: XCTestCase {
         let bytes: [UInt8] = [
             0b10000100, 0b00100001, 0b00001000, 0b01000010
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual("GGGGGGG=", data.base32EncodedString())
     }
@@ -138,7 +138,7 @@ final class Base32Tests: XCTestCase {
         let bytes: [UInt8] = [
             0b10000100
         ]
-        let data = Data(bytes: bytes)
+        let data = Data(bytes)
 
         XCTAssertEqual("GG", data.base32EncodedString(padding: false))
     }
