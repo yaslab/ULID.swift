@@ -141,6 +141,7 @@ extension Data {
             defer { dst.deallocate() }
 
             let work = UnsafeMutablePointer<UInt8>.allocate(capacity: 8)
+            work.initialize(repeating: 0, count: 8)
             defer { work.deallocate() }
 
             while srcleft > 0 {
