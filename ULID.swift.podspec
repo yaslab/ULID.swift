@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = 'ULID.swift'
-  spec.version      = '1.0.0'
+  spec.version      = '1.1.0'
   spec.license      = { :type => 'MIT' }
   spec.homepage     = 'https://github.com/yaslab/ULID.swift'
   spec.authors      = { 'Yasuhiro Hatta' => 'hatta.yasuhiro@gmail.com' }
@@ -14,4 +14,5 @@ Pod::Spec.new do |spec|
   spec.osx.deployment_target      = '10.9'
 
   spec.module_name   = 'ULID'
+  spec.swift_version = '5.0'
 end

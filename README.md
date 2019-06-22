@@ -64,19 +64,19 @@ print(ulid.ulidString) // 01D132CXJVYQ7091KZPZR5WH1X
 ### CocoaPods
 
 ```
-pod 'ULID.swift', '~> 1.0.0'
+pod 'ULID.swift', '~> 1.1.0'
 ```
 
 ### Carthage
 
 ```
-github "yaslab/ULID.swift" ~> 1.0.0
+github "yaslab/ULID.swift" ~> 1.1.0
 ```
 
 ### Swift Package Manager
 
 ```
-.package(url: "https://github.com/yaslab/ULID.swift.git", .upToNextMinor(from: "1.0.0"))
+.package(url: "https://github.com/yaslab/ULID.swift.git", .upToNextMinor(from: "1.1.0"))
 ```
 
 ## License
