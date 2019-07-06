@@ -10,7 +10,7 @@ import Foundation
 
 enum Base32 {
 
-    static let crockfordsEncodingTable: [UInt8] = "0123456789ABCDEFGHJKMNPQRSTVWXYZ".utf8.map({ $0 })
+    static let crockfordsEncodingTable: [UInt8] = Array("0123456789ABCDEFGHJKMNPQRSTVWXYZ".utf8)
 
     static let crockfordsDecodingTable: [UInt8] = [
         // 0     1     2     3     4     5     6     7     8     9     a     b     c     d     e     f
