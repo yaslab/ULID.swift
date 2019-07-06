@@ -28,7 +28,7 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
     }
 
     public init?(ulidString string: String) {
-        guard string.count == 26, let data = Data(base32Encoded: "000000" + string) else {
+        guard string.utf8.count == 26, let data = Data(base32Encoded: "000000" + string) else {
             return nil
         }
         withUnsafeMutableBytes(of: &ulid) {

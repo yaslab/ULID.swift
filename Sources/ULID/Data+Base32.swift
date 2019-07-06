@@ -51,11 +51,11 @@ extension Data {
         var srci = 0
 
         let dstlen = src.count * 5 / 8
-        var dst = UnsafeMutablePointer<UInt8>.allocate(capacity: dstlen)
+        let dst = UnsafeMutablePointer<UInt8>.allocate(capacity: dstlen)
         var dsti = 0
         defer { dst.deallocate() }
 
-        var work = UnsafeMutablePointer<UInt8>.allocate(capacity: 8)
+        let work = UnsafeMutablePointer<UInt8>.allocate(capacity: 8)
         defer { work.deallocate() }
 
         while srcleft > 0 {
@@ -96,19 +96,17 @@ extension Data {
 
     /// Encode Crockford's Base32
     func base32EncodedString(padding: Bool = true, using table: [UInt8] = Base32.crockfordsEncodingTable) -> String {
-        var srcleft = self.count
-
-        let dstlen: Int
-        if padding {
-            dstlen = (self.count + 4) / 5 * 8
-        } else {
-            dstlen = (self.count * 8 + 4) / 5
-        }
-        var dstleft = dstlen
-
         return self.withUnsafeBytes { (src: UnsafeRawBufferPointer) -> String in
-            var srci: UnsafeRawBufferPointer.Index = 0
+            var srcleft = src.count
+            var srci = 0
 
+            let dstlen: Int
+            if padding {
+                dstlen = (src.count + 4) / 5 * 8
+            } else {
+                dstlen = (src.count * 8 + 4) / 5
+            }
+            var dstleft = dstlen
             let dst = UnsafeMutablePointer<UInt8>.allocate(capacity: dstlen + 1)
             var dstp = dst
             defer { dst.deallocate() }
