@@ -61,6 +61,11 @@ final class ULIDTests: XCTestCase {
         XCTAssertEqual(expected, actual!.ulidString)
     }
 
+    func testParseULIDStringError() {
+        let zero = ""
+        XCTAssertNil(ULID(ulidString: zero))
+    }
+
     func testParseULIDData() {
         let expected: [UInt8] = [
             0x01, 0x68, 0x3D, 0x17, 0x73, 0x09, 0xE5, 0x2D,
@@ -71,6 +76,11 @@ final class ULIDTests: XCTestCase {
 
         XCTAssertNotNil(actual)
         XCTAssertEqual(expected, Array(actual!.ulidData))
+    }
+
+    func testParseULIDDataError() {
+        let zero = Data()
+        XCTAssertNil(ULID(ulidData: zero))
     }
 
     func testULIDDataLength() {
@@ -127,10 +137,10 @@ final class ULIDTests: XCTestCase {
     }
 
     func testComparable1() {
-        let lhs = ULID(ulid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
-        let rhs = ULID(ulid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1))
-        XCTAssertTrue(lhs < rhs)
-        XCTAssertFalse(lhs > rhs)
+        let lhs = ULID(ulid: (1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+        let rhs = ULID(ulid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+        XCTAssertFalse(lhs < rhs)
+        XCTAssertTrue(lhs > rhs)
     }
 
     func testComparable2() {
@@ -141,6 +151,13 @@ final class ULIDTests: XCTestCase {
     }
 
     func testComparable3() {
+        let lhs = ULID(ulid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+        let rhs = ULID(ulid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1))
+        XCTAssertTrue(lhs < rhs)
+        XCTAssertFalse(lhs > rhs)
+    }
+
+    func testComparable4() {
         let now = Date()
         let ulid0 = ULID(timestamp: now.addingTimeInterval(-120))
         let ulid1 = ULID(timestamp: now.addingTimeInterval(-60))
@@ -176,6 +193,21 @@ final class ULIDTests: XCTestCase {
             XCTAssertEqual(ulidString, model.ulid.ulidString)
         } catch {
             XCTFail("\(error)")
+        }
+    }
+
+    func testDecodableError() {
+        let json = """
+            { "ulid" : "" }
+            """
+        do {
+            let decoder = JSONDecoder()
+            _ = try decoder.decode(CodableModel.self, from: json.data(using: .utf8)!)
+            XCTFail()
+        } catch DecodingError.dataCorrupted {
+            // Success
+        } catch {
+            XCTFail()
         }
     }
 
