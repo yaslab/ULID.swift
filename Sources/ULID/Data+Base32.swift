@@ -39,103 +39,74 @@ extension Data {
     /// Decode Crockford's Base32
     init?(base32Encoded base32String: String, using table: [UInt8] = Base32.crockfordsDecodingTable) {
         var base32String = base32String
-        while let last = base32String.last, last == "=" {
-            base32String.removeLast()
+        if base32String.last == "=", let index = base32String.lastIndex(where: { $0 != "=" }) {
+            base32String = String(base32String[...index])
         }
 
-        let result: Data? = base32String.withCString(encodedAs: Unicode.UTF8.self) { (src) in
-            func _strlen(_ str: UnsafePointer<UInt8>) -> Int {
-                var str = str
-                var i = 0
-                while str.pointee != 0 {
-                    str += 1
-                    i += 1
-                }
-                return i
-            }
-
-            let srclen = _strlen(src)
-            guard [0, 2, 4, 5, 7].contains(srclen % 8) else {
-                return nil
-            }
-
-            let dstlen = srclen * 5 / 8
-
-            var buffer = Data(count: dstlen)
-            let success: Bool = buffer.withUnsafeMutableBytes { (dst: UnsafeMutableRawBufferPointer) -> Bool in
-                var srcleft = srclen
-                var srcp = src
-
-                var dsti: UnsafeMutableRawBufferPointer.Index = 0
-
-                let work = UnsafeMutablePointer<UInt8>.allocate(capacity: 8)
-                defer { work.deallocate() }
-
-                while srcleft > 0 {
-                    let worklen = Swift.min(8, srcleft)
-                    for i in 0 ..< worklen {
-                        work[i] = table[Int(srcp[i])]
-                        if work[i] == 0xff {
-                            return false
-                        }
-                    }
-
-                    switch worklen {
-                    case 8:
-                        dst[dsti + 4] = (work[6] << 5) | (work[7]     )
-                        fallthrough
-                    case 7:
-                        dst[dsti + 3] = (work[4] << 7) | (work[5] << 2) | (work[6] >> 3)
-                        fallthrough
-                    case 5:
-                        dst[dsti + 2] = (work[3] << 4) | (work[4] >> 1)
-                        fallthrough
-                    case 4:
-                        dst[dsti + 1] = (work[1] << 6) | (work[2] << 1) | (work[3] >> 4)
-                        fallthrough
-                    case 2:
-                        dst[dsti + 0] = (work[0] << 3) | (work[1] >> 2)
-                    default:
-                        break
-                    }
-
-                    srcp += 8
-                    srcleft -= 8
-                    dsti += 5
-                }
-
-                return true
-            }
-
-            guard success else {
-                return nil
-            }
-
-            return buffer
-        }
-
-        guard let data = result else {
+        let src = base32String.utf8
+        guard [0, 2, 4, 5, 7].contains(src.count % 8) else {
             return nil
         }
+        var srcleft = src.count
+        var srci = 0
 
-        self = data
+        let dstlen = src.count * 5 / 8
+        let dst = UnsafeMutablePointer<UInt8>.allocate(capacity: dstlen)
+        var dsti = 0
+        defer { dst.deallocate() }
+
+        let work = UnsafeMutablePointer<UInt8>.allocate(capacity: 8)
+        defer { work.deallocate() }
+
+        while srcleft > 0 {
+            let worklen = Swift.min(8, srcleft)
+            for i in 0 ..< worklen {
+                work[i] = table[Int(src[src.index(src.startIndex, offsetBy: srci + i)])]
+                if work[i] == 0xff {
+                    return nil
+                }
+            }
+
+            switch worklen {
+            case 8:
+                dst[dsti + 4] = (work[6] << 5) | (work[7]     )
+                fallthrough
+            case 7:
+                dst[dsti + 3] = (work[4] << 7) | (work[5] << 2) | (work[6] >> 3)
+                fallthrough
+            case 5:
+                dst[dsti + 2] = (work[3] << 4) | (work[4] >> 1)
+                fallthrough
+            case 4:
+                dst[dsti + 1] = (work[1] << 6) | (work[2] << 1) | (work[3] >> 4)
+                fallthrough
+            case 2:
+                dst[dsti + 0] = (work[0] << 3) | (work[1] >> 2)
+            default:
+                break
+            }
+
+            srci += 8
+            srcleft -= 8
+            dsti += 5
+        }
+
+        self = Data(bytes: dst, count: dstlen)
     }
 
     /// Encode Crockford's Base32
     func base32EncodedString(padding: Bool = true, using table: [UInt8] = Base32.crockfordsEncodingTable) -> String {
-        var srcleft = self.count
-
-        let dstlen: Int
-        if padding {
-            dstlen = (self.count + 4) / 5 * 8
-        } else {
-            dstlen = (self.count * 8 + 4) / 5
-        }
-        var dstleft = dstlen
-
         return self.withUnsafeBytes { (src: UnsafeRawBufferPointer) -> String in
-            var srci: UnsafeRawBufferPointer.Index = 0
+            var srcleft = src.count
+            var srci = 0
 
+            let dstlen: Int
+            if padding {
+                dstlen = (src.count + 4) / 5 * 8
+            } else {
+                dstlen = (src.count * 8 + 4) / 5
+            }
+            var dstleft = dstlen
             let dst = UnsafeMutablePointer<UInt8>.allocate(capacity: dstlen + 1)
             var dstp = dst
             defer { dst.deallocate() }
@@ -179,18 +150,18 @@ extension Data {
                     if padding {
                         switch srcleft {
                         case 1:
-                            dstp[2] = "=".utf8.first!
-                            dstp[3] = "=".utf8.first!
+                            dstp[2] = 0x3d
+                            dstp[3] = 0x3d
                             fallthrough
                         case 2:
-                            dstp[4] = "=".utf8.first!
+                            dstp[4] = 0x3d
                             fallthrough
                         case 3:
-                            dstp[5] = "=".utf8.first!
-                            dstp[6] = "=".utf8.first!
+                            dstp[5] = 0x3d
+                            dstp[6] = 0x3d
                             fallthrough
                         case 4:
-                            dstp[7] = "=".utf8.first!
+                            dstp[7] = 0x3d
                         default:
                             break
                         }
