@@ -230,27 +230,6 @@ final class ULIDTests: XCTestCase {
         XCTAssertEqual(16, MemoryLayout<ULID>.size)
     }
 
-    static var allTests = [
-        ("testGenerateTimestamp", testGenerateTimestamp),
-        ("testGenerateRandomness", testGenerateRandomness),
-        ("testParseULIDString", testParseULIDString),
-        ("testParseULIDData", testParseULIDData),
-        ("testULIDDataLength", testULIDDataLength),
-        ("testULIDStringLength", testULIDStringLength),
-        ("testHashable1", testHashable1),
-        ("testHashable2", testHashable2),
-        ("testHashable3", testHashable3),
-        ("testEquatable1", testEquatable1),
-        ("testEquatable2", testEquatable2),
-        ("testComparable1", testComparable1),
-        ("testComparable2", testComparable2),
-        ("testComparable3", testComparable3),
-        ("testCustomStringConvertible", testCustomStringConvertible),
-        ("testDecodable", testDecodable),
-        ("testEncodable", testEncodable),
-        ("testMemorySize", testMemorySize)
-    ]
-
 }
 
 private struct MockRandomNumberGenerator: RandomNumberGenerator {
