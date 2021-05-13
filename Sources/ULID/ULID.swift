@@ -42,8 +42,8 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
     ///   - uuid: Data representation of the random part of the ULID
     /// - Returns: **NIL** if the ULID is less than 80 bits or 10 bytes in size
     public init?(timestamp: Date = Date(), uuid: Data){
-        let randomDataInBits = 80
-        guard uuid.count >= randomDataInBits / 8 else { return nil }
+        let randomDataInBytes = 10
+        guard uuid.count >= randomDataInBytes else { return nil }
         
         withUnsafeMutableBytes(of: &ulid) { (buffer) in
             var i = 0
@@ -55,8 +55,8 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
                 }
             }
             var randomPart:Data = Data()
-            if uuid.count > randomDataInBits / 8{
-                randomPart = uuid.prefix(randomDataInBits)
+            if uuid.count > randomDataInBytes{
+                randomPart = uuid.prefix(randomDataInBytes)
             }else{
                 randomPart = uuid
             }
