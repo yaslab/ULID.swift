@@ -39,7 +39,7 @@ final class ULIDTests: XCTestCase {
             0x01, 0x68, 0x3D, 0x17, 0x73, 0x09, 0x69, 0xF4, 0xA2, 0xB1
         ]
         
-        let actual = ULID(timestamp: timestamp, uuid: Data(uuidCorrectSize))!
+        let actual = ULID(timestamp: timestamp, randomPartData: Data(uuidCorrectSize))!
         XCTAssertEqual(timestamp, actual.timestamp)
         
         XCTAssertEqual(0x01, actual.ulid.6)
@@ -60,7 +60,7 @@ final class ULIDTests: XCTestCase {
             0x01, 0x68, 0x3D, 0x17, 0x73, 0x09, 0x69, 0xF4, 0xA2, 0xB1, 0x99, 0x55
         ]
         
-        let actual2 = ULID(timestamp: timestamp, uuid: Data(uuidTooBigSize))!
+        let actual2 = ULID(timestamp: timestamp, randomPartData: Data(uuidTooBigSize))!
         XCTAssertEqual(timestamp, actual.timestamp)
         
         XCTAssertEqual(0x01, actual2.ulid.6)
@@ -79,7 +79,7 @@ final class ULIDTests: XCTestCase {
             0x01, 0x68, 0x3D, 0x17, 0x73,
         ]
         
-        XCTAssertNil(ULID(timestamp: timestamp, uuid: Data(uuidTooSmallSize)))
+        XCTAssertNil(ULID(timestamp: timestamp, randomPartData: Data(uuidTooSmallSize)))
     }
 
     func testGenerateRandomness() {
