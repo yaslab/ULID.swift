@@ -32,6 +32,55 @@ final class ULIDTests: XCTestCase {
 
         XCTAssertEqual("01D0YHEWR9", actual.ulidString.prefix(10))
     }
+    
+    func testGenerateTimestampAndRandomnes(){
+        let timestamp = Date(timeIntervalSince1970: 1547213173.513)
+        let uuidCorrectSize: [UInt8] = [
+            0x01, 0x68, 0x3D, 0x17, 0x73, 0x09, 0x69, 0xF4, 0xA2, 0xB1
+        ]
+        
+        let actual = ULID(timestamp: timestamp, uuid: Data(uuidCorrectSize))!
+        XCTAssertEqual(timestamp, actual.timestamp)
+        
+        XCTAssertEqual(0x01, actual.ulid.6)
+        XCTAssertEqual(0x68, actual.ulid.7)
+        XCTAssertEqual(0x3D, actual.ulid.8)
+        XCTAssertEqual(0x17, actual.ulid.9)
+        XCTAssertEqual(0x73, actual.ulid.10)
+        XCTAssertEqual(0x09, actual.ulid.11)
+        XCTAssertEqual(0x69, actual.ulid.12)
+        XCTAssertEqual(0xF4, actual.ulid.13)
+        XCTAssertEqual(0xA2, actual.ulid.14)
+        XCTAssertEqual(0xB1, actual.ulid.15)
+
+        
+        
+        //Test if initializer discards bytes beyond 10 bytes
+        let uuidTooBigSize: [UInt8] = [
+            0x01, 0x68, 0x3D, 0x17, 0x73, 0x09, 0x69, 0xF4, 0xA2, 0xB1, 0x99, 0x55
+        ]
+        
+        let actual2 = ULID(timestamp: timestamp, uuid: Data(uuidTooBigSize))!
+        XCTAssertEqual(timestamp, actual.timestamp)
+        
+        XCTAssertEqual(0x01, actual2.ulid.6)
+        XCTAssertEqual(0x68, actual2.ulid.7)
+        XCTAssertEqual(0x3D, actual2.ulid.8)
+        XCTAssertEqual(0x17, actual2.ulid.9)
+        XCTAssertEqual(0x73, actual2.ulid.10)
+        XCTAssertEqual(0x09, actual2.ulid.11)
+        XCTAssertEqual(0x69, actual2.ulid.12)
+        XCTAssertEqual(0xF4, actual2.ulid.13)
+        XCTAssertEqual(0xA2, actual2.ulid.14)
+        XCTAssertEqual(0xB1, actual2.ulid.15)
+        
+        
+        let uuidTooSmallSize: [UInt8] = [
+            0x01, 0x68, 0x3D, 0x17, 0x73,
+        ]
+        
+        XCTAssertNil(ULID(timestamp: timestamp, uuid: Data(uuidTooSmallSize)))
+    }
 
     func testGenerateRandomness() {
         let timestamp = Date(timeIntervalSince1970: 1547213173.513)
