@@ -1,8 +1,5 @@
 # ULID.swift
 
-[![Build Status](https://travis-ci.org/yaslab/ULID.swift.svg?branch=master)](https://travis-ci.org/yaslab/ULID.swift)
-[![codecov](https://codecov.io/gh/yaslab/ULID.swift/branch/master/graph/badge.svg)](https://codecov.io/gh/yaslab/ULID.swift)
-
 Implementation of [ULID](https://github.com/ulid/spec/blob/master/README.md) in Swift.
 
 ## Usage
