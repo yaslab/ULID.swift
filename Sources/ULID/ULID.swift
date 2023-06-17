@@ -10,14 +10,17 @@ import Foundation
 
 public typealias ulid_t = uuid_t
 
+/// Universally Unique Lexicographically Sortable Identifier.
 public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
 
     public private(set) var ulid: ulid_t = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
+    /// Create a ULID from a `ulid_t`.
     public init(ulid: ulid_t) {
         self.ulid = ulid
     }
 
+    /// Create a ULID from a data.
     public init?(ulidData data: Data) {
         guard data.count == 16 else {
             return nil
@@ -27,6 +30,7 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
         }
     }
 
+    /// Create a ULID from a string.
     public init?(ulidString string: String) {
         guard string.utf8.count == 26, let data = Data(base32Encoded: "000000" + string) else {
             return nil
@@ -36,11 +40,12 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
         }
     }
     
-    /// Creates a new ULID instance from a given timestamp and a random part that you provide
+    /// Create a ULID from a timestamp and a random part.
+    ///
     /// - Parameters:
-    ///   - timestamp: -
-    ///   - randomPartData: Data representation of the random part of the ULID
-    /// - Returns: **NIL** if the `randomPartData` is less than 80 bits or 10 bytes in size
+    ///   - timestamp: Specify the timestamp as `Date`.
+    ///   - data: Data representation of the random part of the ULID.
+    /// - Returns: **nil** if the `data` is less than 80 bits or 10 bytes in size.
     public init?(timestamp: Date = Date(), randomPartData data: Data){
         let randomDataInBytes = 10
         guard data.count >= randomDataInBytes else { return nil }
@@ -70,6 +75,7 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
         }
     }
 
+    /// Create a ULID with the given timestamp and random number generator.
     public init<T: RandomNumberGenerator>(timestamp: Date, generator: inout T) {
         withUnsafeMutableBytes(of: &ulid) { (buffer) in
             var i = 0
@@ -97,17 +103,20 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
         }
     }
 
+    /// Create a ULID with the given timestamp.
     public init(timestamp: Date = Date()) {
         var g = SystemRandomNumberGenerator()
         self.init(timestamp: timestamp, generator: &g)
     }
 
+    /// Returns a raw binary data.
     public var ulidData: Data {
         return withUnsafeBytes(of: ulid) {
             return Data(buffer: $0.bindMemory(to: UInt8.self))
         }
     }
 
+    /// Returns a string created from the ULID.
     public var ulidString: String {
         return withUnsafeBytes(of: ulid) {
             var data = Data(count: 4)
@@ -116,6 +125,7 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
         }
     }
 
+    /// Returns the timestamp part of the ULID.
     public var timestamp: Date {
         return withUnsafeBytes(of: ulid) { (buffer) in
             var millisec: UInt64 = 0
@@ -198,8 +208,12 @@ extension ULID: Codable {
         let string = try container.decode(String.self)
 
         guard let ulid = ULID(ulidString: string) else {
-            throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: decoder.codingPath,
-                                                                    debugDescription: "Attempted to decode ULID from invalid ULID string."))
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Attempted to decode ULID from invalid ULID string."
+                )
+            )
         }
 
         self = ulid
