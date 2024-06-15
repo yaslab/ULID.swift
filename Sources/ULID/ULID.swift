@@ -11,7 +11,7 @@ import Foundation
 public typealias ulid_t = uuid_t
 
 /// Universally Unique Lexicographically Sortable Identifier.
-public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible {
+public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible, Sendable {
 
     public private(set) var ulid: ulid_t = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 

@@ -281,6 +281,11 @@ final class ULIDTests: XCTestCase {
 
 }
 
+extension ULID {
+    // If the ULID does not conform to Sendable, this code will result in a build error.
+    static let testSendable = ULID()
+}
+
 private struct MockRandomNumberGenerator: RandomNumberGenerator {
 
     let value: UInt64
