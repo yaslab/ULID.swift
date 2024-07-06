@@ -8,11 +8,11 @@ Pod::Spec.new do |spec|
   spec.source       = { :git => 'https://github.com/yaslab/ULID.swift.git', :tag => spec.version }
   spec.source_files = 'Sources/ULID/*.swift'
 
-  spec.ios.deployment_target      = '9.0'
-  spec.tvos.deployment_target     = '9.0'
-  spec.watchos.deployment_target  = '2.0'
+  spec.ios.deployment_target      = '12.0'
+  spec.tvos.deployment_target     = '12.0'
+  spec.watchos.deployment_target  = '4.0'
   spec.osx.deployment_target      = '10.13'
 
   spec.module_name   = 'ULID'
-  spec.swift_version = '5.0'
+  spec.swift_version = '5.4'
 end
