@@ -63,8 +63,29 @@ print(ulid.ulidString) // 01D132CXJVYQ7091KZPZR5WH1X
 
 ### Swift Package Manager
 
-```
-.package(url: "https://github.com/yaslab/ULID.swift.git", from: "1.3.0")
+Add the dependency to your `Package.swift`. For example:
+
+```swift
+// swift-tools-version: 5.9
+
+import PackageDescription
+
+let package = Package(
+    name: "MyPackage",
+    dependencies: [
+        // Add `ULID.swift` package here.
+        .package(url: "https://github.com/yaslab/ULID.swift.git", from: "1.3.0")
+    ],
+    targets: [
+        .executableTarget(
+            name: "MyCommand",
+            dependencies: [
+                // Then add it to your module's dependencies.
+                .product(name: "ULID", package: "ULID.swift")
+            ]
+        )
+    ]
+)
 ```
 
 ### CocoaPods
