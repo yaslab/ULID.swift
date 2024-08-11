@@ -74,7 +74,7 @@ let package = Package(
     name: "MyPackage",
     dependencies: [
         // Add `ULID.swift` package here.
-        .package(url: "https://github.com/yaslab/ULID.swift.git", from: "1.3.0")
+        .package(url: "https://github.com/yaslab/ULID.swift.git", from: "1.3.1")
     ],
     targets: [
         .executableTarget(
@@ -91,7 +91,7 @@ let package = Package(
 ### CocoaPods
 
 ```
-pod 'ULID.swift', '~> 1.3.0'
+pod 'ULID.swift', '~> 1.3.1'
 ```
 
 ## License
