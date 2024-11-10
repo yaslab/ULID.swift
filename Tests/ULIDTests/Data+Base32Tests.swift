@@ -6,15 +6,18 @@
 //  Copyright © 2019 yaslab. All rights reserved.
 //
 
-import XCTest
+#if compiler(>=6.0)
+
+import Foundation
+import Testing
 @testable import ULID
 
-final class Base32Tests: XCTestCase {
+struct Base32Tests {
 
     // MARK: -
     // MARK: Encode
 
-    func testEncodeBase32() {
+    @Test func testEncodeBase32() {
         let expected = "00000001D0YX86C6ZTSZJNXFHDQMCYBQ"
 
         let bytes: [UInt8] = [
@@ -23,143 +26,142 @@ final class Base32Tests: XCTestCase {
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual(expected, data.base32EncodedString())
+        #expect(expected == data.base32EncodedString())
     }
 
-    func testEncode1() {
+    @Test func testEncode1() {
         let bytes: [UInt8] = [
             0b11111000, 0b00000000, 0b00000000, 0b00000000, 0b00000000
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual("Z0000000", data.base32EncodedString())
+        #expect("Z0000000" == data.base32EncodedString())
     }
 
-    func testEncode2() {
+    @Test func testEncode2() {
         let bytes: [UInt8] = [
             0b00000111, 0b11000000, 0b00000000, 0b00000000, 0b00000000
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual("0Z000000", data.base32EncodedString())
+        #expect("0Z000000" == data.base32EncodedString())
     }
 
-    func testEncode3() {
+    @Test func testEncode3() {
         let bytes: [UInt8] = [
             0b00000000, 0b00111110, 0b00000000, 0b00000000, 0b00000000
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual("00Z00000", data.base32EncodedString())
+        #expect("00Z00000" == data.base32EncodedString())
     }
 
-    func testEncode4() {
+    @Test func testEncode4() {
         let bytes: [UInt8] = [
             0b00000000, 0b00000001, 0b11110000, 0b00000000, 0b00000000
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual("000Z0000", data.base32EncodedString())
+        #expect("000Z0000" == data.base32EncodedString())
     }
 
-    func testEncode5() {
+    @Test func testEncode5() {
         let bytes: [UInt8] = [
             0b00000000, 0b00000000, 0b00001111, 0b10000000, 0b00000000
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual("0000Z000", data.base32EncodedString())
+        #expect("0000Z000" == data.base32EncodedString())
     }
 
-    func testEncode6() {
+    @Test func testEncode6() {
         let bytes: [UInt8] = [
             0b00000000, 0b00000000, 0b00000000, 0b01111100, 0b00000000
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual("00000Z00", data.base32EncodedString())
+        #expect("00000Z00" == data.base32EncodedString())
     }
 
-    func testEncode7() {
+    @Test func testEncode7() {
         let bytes: [UInt8] = [
             0b00000000, 0b00000000, 0b00000000, 0b00000011, 0b11100000
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual("000000Z0", data.base32EncodedString())
+        #expect("000000Z0" == data.base32EncodedString())
     }
 
-    func testEncode8() {
+    @Test func testEncode8() {
         let bytes: [UInt8] = [
             0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00011111
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual("0000000Z", data.base32EncodedString())
+        #expect("0000000Z" == data.base32EncodedString())
     }
 
-    func testEncodePad1() {
+    @Test func testEncodePad1() {
         let bytes: [UInt8] = [
             0b10000100
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual("GG======", data.base32EncodedString())
+        #expect("GG======" == data.base32EncodedString())
     }
 
-    func testEncodePad2() {
+    @Test func testEncodePad2() {
         let bytes: [UInt8] = [
             0b10000100, 0b00100001
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual("GGGG====", data.base32EncodedString())
+        #expect("GGGG====" == data.base32EncodedString())
     }
 
-    func testEncodePad3() {
+    @Test func testEncodePad3() {
         let bytes: [UInt8] = [
             0b10000100, 0b00100001, 0b00001000
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual("GGGGG===", data.base32EncodedString())
+        #expect("GGGGG===" == data.base32EncodedString())
     }
 
-    func testEncodePad4() {
+    @Test func testEncodePad4() {
         let bytes: [UInt8] = [
             0b10000100, 0b00100001, 0b00001000, 0b01000010
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual("GGGGGGG=", data.base32EncodedString())
+        #expect("GGGGGGG=" == data.base32EncodedString())
     }
 
-    func testEncodeNoPad() {
+    @Test func testEncodeNoPad() {
         let bytes: [UInt8] = [
             0b10000100
         ]
         let data = Data(bytes)
 
-        XCTAssertEqual("GG", data.base32EncodedString(padding: false))
+        #expect("GG" == data.base32EncodedString(padding: false))
     }
 
     // MARK: -
     // MARK: Decode
 
-    func testDecodeBase32() {
+    @Test func testDecodeBase32() throws {
         let expected: [UInt8] = [
             0x00, 0x00, 0x00, 0x00, 0x01, 0x68, 0x3D, 0xD4, 0x19, 0x86,
             0xFE, 0xB3, 0xF9, 0x57, 0xAF, 0x8B, 0x6F, 0x46, 0x79, 0x77
         ]
 
         let base32String = "00000001D0YX86C6ZTSZJNXFHDQMCYBQ"
-        let data = Data(base32Encoded: base32String)
+        let data = try #require(Data(base32Encoded: base32String))
 
-        XCTAssertNotNil(data)
-        XCTAssertEqual(expected, Array(data!))
+        #expect(expected == Array(data))
     }
 
-    func testDecodeTable() {
+    @Test func testDecodeTable() throws {
         let table: [Character: UInt8] = [
             "0": 0x00, "O": 0x00, "o": 0x00,
             "1": 0x01, "I": 0x01, "i": 0x01, "L": 0x01, "l": 0x01,
@@ -196,32 +198,32 @@ final class Base32Tests: XCTestCase {
         ]
 
         for (char, value) in table {
-            let data = Data(base32Encoded: String(char) + "0")
-            XCTAssertNotNil(data)
-            XCTAssertEqual(1, data!.count)
-            XCTAssertEqual(value << 3, data![0])
+            let data = try #require(Data(base32Encoded: String(char) + "0"))
+            try #require(data.count == 1)
+            #expect(data[0] == (value << 3))
         }
     }
 
-    func testDecodeInvalidCharacter() {
+    @Test func testDecodeInvalidCharacter() {
         let invalidCharacters = ["U", "u", "*", "~", "$", "="]
 
         for char in invalidCharacters {
             let data = Data(base32Encoded: char + "0")
-            XCTAssertNil(data)
+            #expect(data == nil)
         }
     }
 
-    func testDecodePadding() {
-        let data = Data(base32Encoded: "AM======")
-        XCTAssertNotNil(data)
-        XCTAssertEqual(1, data!.count)
-        XCTAssertEqual(0b01010101, data![0])
+    @Test func testDecodePadding() throws {
+        let data = try #require(Data(base32Encoded: "AM======"))
+        try #require(data.count == 1)
+        #expect(data[0] == 0b01010101)
     }
 
-    func testDecodeIncorrectLength() {
+    @Test func testDecodeIncorrectLength() {
         let data = Data(base32Encoded: "0")
-        XCTAssertNil(data)
+        #expect(data == nil)
     }
 
 }
+
+#endif
