@@ -59,6 +59,26 @@ let ulid = ULID(ulid: uuid.uuid)
 print(ulid.ulidString) // 01D132CXJVYQ7091KZPZR5WH1X
 ```
 
+### Monotonically Sorted ULIDs
+
+To generate ULIDs that are guaranteed to be monotonically sorted:
+
+```swift
+import ULID
+
+// Create a monotonic factory
+let factory = ULID.MonotonicFactory()
+
+// Generate ULIDs that are guaranteed to sort correctly
+let ulid1 = factory.create()
+let ulid2 = factory.create()
+let ulid3 = factory.create()
+
+// These will always be true
+assert(ulid1 < ulid2)
+assert(ulid2 < ulid3)
+```
+
 ## Installation
 
 ### Swift Package Manager

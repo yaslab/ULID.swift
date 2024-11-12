@@ -298,6 +298,39 @@ struct ULIDTests {
         #expect(MemoryLayout<ULID>.size == 16)
     }
 
+    @Test func testMonotonicFactory() {
+        let factory = ULID.MonotonicFactory()
+        let timestamp = Date()
+        
+        // Test multiple increments in same millisecond
+        let ulid1 = factory.create(timestamp: timestamp)
+        let ulid2 = factory.create(timestamp: timestamp)
+        let ulid3 = factory.create(timestamp: timestamp)
+        let ulid4 = factory.create(timestamp: timestamp)
+        let ulid5 = factory.create(timestamp: timestamp)
+        
+        // Verify all are strictly increasing
+        #expect(ulid1 < ulid2)
+        #expect(ulid2 < ulid3)
+        #expect(ulid3 < ulid4)
+        #expect(ulid4 < ulid5)
+        
+        // Verify they all have the same timestamp component
+        let timeComponent: String = String(ulid1.ulidString.prefix(10))
+        #expect(timeComponent == String(ulid2.ulidString.prefix(10)))
+        #expect(timeComponent == String(ulid3.ulidString.prefix(10)))
+        #expect(timeComponent == String(ulid4.ulidString.prefix(10)))
+        #expect(timeComponent == String(ulid5.ulidString.prefix(10)))
+        
+        // Test with future timestamp after sequence
+        let newerTimestamp: Date = timestamp.addingTimeInterval(1)
+        let ulid6 = factory.create(timestamp: newerTimestamp)
+        
+        #expect(ulid5 < ulid6)
+        #expect(String(ulid5.ulidString.prefix(10)) != String(ulid6.ulidString.prefix(10)))
+    }
+
+    
 }
 
 extension ULID {
