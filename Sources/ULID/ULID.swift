@@ -225,3 +225,67 @@ extension ULID: Codable {
     }
 
 }
+
+/// A factory that generates monotonically increasing ULIDs
+public final class MonotonicFactory {
+    private var lastULID: ULID?
+    private var generator: SystemRandomNumberGenerator
+    
+    public init(generator: SystemRandomNumberGenerator = SystemRandomNumberGenerator()) {
+        self.generator = generator
+    }
+    
+    /// Generate a new ULID that's guaranteed to be monotonically increasing
+    public func create(timestamp: Date = Date()) -> ULID {
+        if let last: ULID = lastULID {
+            // If we have the same timestamp, increment the random part
+            if last.timestamp == timestamp {
+                var incrementedULID: ulid_t = last.ulid
+                
+                // Convert tuple to array for easier manipulation
+                var components: [UInt8] = [
+                    incrementedULID.0, incrementedULID.1, incrementedULID.2, incrementedULID.3,
+                    incrementedULID.4, incrementedULID.5, incrementedULID.6, incrementedULID.7,
+                    incrementedULID.8, incrementedULID.9, incrementedULID.10, incrementedULID.11,
+                    incrementedULID.12, incrementedULID.13, incrementedULID.14, incrementedULID.15
+                ]
+                
+                // Try to increment the random part (last 10 bytes)
+                for i: Int in (6...15).reversed() {
+                    if components[i] == 255 {
+                        components[i] = 0
+                        continue
+                    }
+                    components[i] += 1
+                    
+                    // Convert back to tuple
+                    let newULID: ULID = ULID(ulid: (
+                        components[0], components[1], components[2], components[3],
+                        components[4], components[5], components[6], components[7],
+                        components[8], components[9], components[10], components[11],
+                        components[12], components[13], components[14], components[15]
+                    ))
+                    lastULID = newULID
+                    return newULID
+                }
+                
+                // If we couldn't increment (all 0xFF), generate new random
+                let newULID: ULID = ULID(timestamp: timestamp, generator: &generator)
+                lastULID = newULID
+                return newULID
+            }
+            
+            // If new timestamp is smaller than last one, use last timestamp
+            if timestamp < last.timestamp {
+                let newULID: ULID = ULID(timestamp: last.timestamp, generator: &generator)
+                lastULID = newULID
+                return newULID
+            }
+        }
+        
+        // Generate new ULID normally
+        let newULID: ULID = ULID(timestamp: timestamp, generator: &generator)
+        lastULID = newULID
+        return newULID
+    }
+}
