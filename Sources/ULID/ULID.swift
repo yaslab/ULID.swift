@@ -199,6 +199,73 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible, Se
         return ulidString
     }
 
+    /// A factory that generates monotonically increasing ULIDs
+    public final class MonotonicFactory {
+        private var lastTime: UInt64 = 0
+        private var lastRandom: String?
+        private var generator: SystemRandomNumberGenerator
+        
+        public init(generator: SystemRandomNumberGenerator = SystemRandomNumberGenerator()) {
+            self.generator = generator
+        }
+        
+        /// Generate a new ULID that's guaranteed to be monotonically increasing
+        public func create(timestamp: Date = Date()) -> ULID {
+            let currentTime: UInt64 = UInt64(timestamp.timeIntervalSince1970 * 1000.0)
+            
+            if let lastRandomPart: String = lastRandom, currentTime <= lastTime {
+                // Need to increment the random part
+                let incrementedRandom = incrementBase32(lastRandomPart)
+                if let incrementedULID: ULID = ULID(ulidString: encodeTime(lastTime) + incrementedRandom) {
+                    lastRandom = incrementedRandom
+                    return incrementedULID
+                }
+                // If increment failed, fall through to generate new random
+            }
+            
+            // Generate new ULID normally
+            let newULID: ULID = ULID(timestamp: timestamp, generator: &generator)
+            lastTime = currentTime
+            lastRandom = String(newULID.ulidString.dropFirst(10))
+            return newULID
+        }
+        
+        private func encodeTime(_ timestamp: UInt64) -> String {
+            var timeChars: [Character] = [Character](repeating: "0", count: 10)
+            var time: UInt64 = timestamp
+            
+            for i: Int in (0..<10).reversed() {
+                timeChars[i] = Base32.crockfordsEncodingTable[Int(time % 32)].ascii
+                time /= 32
+            }
+            
+            return String(timeChars)
+        }
+        
+        private func incrementBase32(_ str: String) -> String {
+            var chars: [String.Element] = Array(str)
+            let encodingTable: String = String(bytes: Base32.crockfordsEncodingTable, encoding: .ascii)!
+            
+            for i in (0..<chars.count).reversed() {
+                let currentChar: String.Element = chars[i]
+                if let currentIndex: String.Index = encodingTable.firstIndex(of: currentChar) {
+                    if currentIndex < encodingTable.index(before: encodingTable.endIndex) {
+                        // Normal increment case
+                        chars[i] = encodingTable[encodingTable.index(after: currentIndex)]
+                        return String(chars)
+                    }
+                    // Handle overflow by continuing to next position
+                    chars[i] = encodingTable.first!
+                    continue
+                }
+                // If character not found in encoding table, something is wrong
+                fatalError("Invalid base32 character in ULID")
+            }
+            // If we get here, we've overflowed the entire random part
+            return String(repeating: String(encodingTable.first!), count: str.count)
+        }
+    }
+
 }
 
 extension ULID: Codable {
@@ -224,64 +291,6 @@ extension ULID: Codable {
         try container.encode(self.ulidString)
     }
 
-}
-
-/// A factory that generates monotonically increasing ULIDs
-public final class MonotonicFactory {
-    private var lastTime: UInt64 = 0
-    private var lastRandom: String?
-    private var generator: SystemRandomNumberGenerator
-    
-    public init(generator: SystemRandomNumberGenerator = SystemRandomNumberGenerator()) {
-        self.generator = generator
-    }
-    
-    /// Generate a new ULID that's guaranteed to be monotonically increasing
-    public func create(timestamp: Date = Date()) -> ULID {
-        let currentTime: UInt64 = UInt64(timestamp.timeIntervalSince1970 * 1000.0)
-        
-        if let lastRandomPart: String = lastRandom, currentTime <= lastTime {
-            // Need to increment the random part
-            if let incrementedULID: ULID = ULID(ulidString: encodeTime(lastTime) + incrementBase32(lastRandomPart)) {
-                lastRandom = String(incrementedULID.ulidString.dropFirst(10))
-                return incrementedULID
-            }
-        }
-        
-        // Generate new ULID normally
-        let newULID: ULID = ULID(timestamp: timestamp, generator: &generator)
-        lastTime = currentTime
-        lastRandom = String(newULID.ulidString.dropFirst(10))
-        return newULID
-    }
-    
-    private func encodeTime(_ timestamp: UInt64) -> String {
-        var timeChars: [Character] = [Character](repeating: "0", count: 10)
-        var time: UInt64 = timestamp
-        
-        for i: Int in (0..<10).reversed() {
-            timeChars[i] = Base32.crockfordsEncodingTable[Int(time % 32)].ascii
-            time /= 32
-        }
-        
-        return String(timeChars)
-    }
-    
-    private func incrementBase32(_ str: String) -> String {
-        var chars: [String.Element] = Array(str)
-        let encodingTable: String = String(bytes: Base32.crockfordsEncodingTable, encoding: .ascii)!
-        
-        for i in (0..<chars.count).reversed() {
-            let currentChar: String.Element = chars[i]
-            if let currentIndex: String.Index = encodingTable.firstIndex(of: currentChar),
-               currentIndex < encodingTable.index(before: encodingTable.endIndex) {
-                chars[i] = encodingTable[encodingTable.index(after: currentIndex)]
-                return String(chars)
-            }
-            chars[i] = encodingTable.first!
-        }
-        return str // If we couldn't increment, return original
-    }
 }
 
 // Add ASCII conversion helper

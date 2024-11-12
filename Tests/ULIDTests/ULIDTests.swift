@@ -299,15 +299,15 @@ struct ULIDTests {
     }
 
     @Test func testMonotonicFactory() {
-        let factory: MonotonicFactory = MonotonicFactory()
-        let timestamp: Date = Date()
+        let factory = ULID.MonotonicFactory()
+        let timestamp = Date()
         
         // Test multiple increments in same millisecond
-        let ulid1: ULID = factory.create(timestamp: timestamp)
-        let ulid2: ULID = factory.create(timestamp: timestamp)
-        let ulid3: ULID = factory.create(timestamp: timestamp)
-        let ulid4: ULID = factory.create(timestamp: timestamp)
-        let ulid5: ULID = factory.create(timestamp: timestamp)
+        let ulid1 = factory.create(timestamp: timestamp)
+        let ulid2 = factory.create(timestamp: timestamp)
+        let ulid3 = factory.create(timestamp: timestamp)
+        let ulid4 = factory.create(timestamp: timestamp)
+        let ulid5 = factory.create(timestamp: timestamp)
         
         // Verify all are strictly increasing
         #expect(ulid1 < ulid2)
@@ -324,7 +324,7 @@ struct ULIDTests {
         
         // Test with future timestamp after sequence
         let newerTimestamp: Date = timestamp.addingTimeInterval(1)
-        let ulid6: ULID = factory.create(timestamp: newerTimestamp)
+        let ulid6 = factory.create(timestamp: newerTimestamp)
         
         #expect(ulid5 < ulid6)
         #expect(String(ulid5.ulidString.prefix(10)) != String(ulid6.ulidString.prefix(10)))
