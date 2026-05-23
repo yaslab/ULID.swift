@@ -3,12 +3,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "ULID.swift", 
+    name: "ULID.swift",
     platforms: [
-        .iOS(.v12), .tvOS(.v12), .watchOS(.v4), .macOS(.v10_13)
+        .iOS(.v12), .tvOS(.v12), .watchOS(.v4), .macOS(.v10_13),
     ],
     products: [
-        .library(name: "ULID", targets: ["ULID"]),
+        .library(name: "ULID", targets: ["ULID"])
     ],
     targets: [
         .target(name: "ULID"),

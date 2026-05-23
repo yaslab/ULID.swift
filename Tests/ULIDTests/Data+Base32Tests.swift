@@ -22,7 +22,7 @@ struct Base32Tests {
 
         let bytes: [UInt8] = [
             0x00, 0x00, 0x00, 0x00, 0x01, 0x68, 0x3D, 0xD4, 0x19, 0x86,
-            0xFE, 0xB3, 0xF9, 0x57, 0xAF, 0x8B, 0x6F, 0x46, 0x79, 0x77
+            0xFE, 0xB3, 0xF9, 0x57, 0xAF, 0x8B, 0x6F, 0x46, 0x79, 0x77,
         ]
         let data = Data(bytes)
 
@@ -31,7 +31,7 @@ struct Base32Tests {
 
     @Test func testEncode1() {
         let bytes: [UInt8] = [
-            0b11111000, 0b00000000, 0b00000000, 0b00000000, 0b00000000
+            0b11111000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,
         ]
         let data = Data(bytes)
 
@@ -40,7 +40,7 @@ struct Base32Tests {
 
     @Test func testEncode2() {
         let bytes: [UInt8] = [
-            0b00000111, 0b11000000, 0b00000000, 0b00000000, 0b00000000
+            0b00000111, 0b11000000, 0b00000000, 0b00000000, 0b00000000,
         ]
         let data = Data(bytes)
 
@@ -49,7 +49,7 @@ struct Base32Tests {
 
     @Test func testEncode3() {
         let bytes: [UInt8] = [
-            0b00000000, 0b00111110, 0b00000000, 0b00000000, 0b00000000
+            0b00000000, 0b00111110, 0b00000000, 0b00000000, 0b00000000,
         ]
         let data = Data(bytes)
 
@@ -58,7 +58,7 @@ struct Base32Tests {
 
     @Test func testEncode4() {
         let bytes: [UInt8] = [
-            0b00000000, 0b00000001, 0b11110000, 0b00000000, 0b00000000
+            0b00000000, 0b00000001, 0b11110000, 0b00000000, 0b00000000,
         ]
         let data = Data(bytes)
 
@@ -67,7 +67,7 @@ struct Base32Tests {
 
     @Test func testEncode5() {
         let bytes: [UInt8] = [
-            0b00000000, 0b00000000, 0b00001111, 0b10000000, 0b00000000
+            0b00000000, 0b00000000, 0b00001111, 0b10000000, 0b00000000,
         ]
         let data = Data(bytes)
 
@@ -76,7 +76,7 @@ struct Base32Tests {
 
     @Test func testEncode6() {
         let bytes: [UInt8] = [
-            0b00000000, 0b00000000, 0b00000000, 0b01111100, 0b00000000
+            0b00000000, 0b00000000, 0b00000000, 0b01111100, 0b00000000,
         ]
         let data = Data(bytes)
 
@@ -85,7 +85,7 @@ struct Base32Tests {
 
     @Test func testEncode7() {
         let bytes: [UInt8] = [
-            0b00000000, 0b00000000, 0b00000000, 0b00000011, 0b11100000
+            0b00000000, 0b00000000, 0b00000000, 0b00000011, 0b11100000,
         ]
         let data = Data(bytes)
 
@@ -94,7 +94,7 @@ struct Base32Tests {
 
     @Test func testEncode8() {
         let bytes: [UInt8] = [
-            0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00011111
+            0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00011111,
         ]
         let data = Data(bytes)
 
@@ -112,7 +112,7 @@ struct Base32Tests {
 
     @Test func testEncodePad2() {
         let bytes: [UInt8] = [
-            0b10000100, 0b00100001
+            0b10000100, 0b00100001,
         ]
         let data = Data(bytes)
 
@@ -121,7 +121,7 @@ struct Base32Tests {
 
     @Test func testEncodePad3() {
         let bytes: [UInt8] = [
-            0b10000100, 0b00100001, 0b00001000
+            0b10000100, 0b00100001, 0b00001000,
         ]
         let data = Data(bytes)
 
@@ -130,7 +130,7 @@ struct Base32Tests {
 
     @Test func testEncodePad4() {
         let bytes: [UInt8] = [
-            0b10000100, 0b00100001, 0b00001000, 0b01000010
+            0b10000100, 0b00100001, 0b00001000, 0b01000010,
         ]
         let data = Data(bytes)
 
@@ -152,7 +152,7 @@ struct Base32Tests {
     @Test func testDecodeBase32() throws {
         let expected: [UInt8] = [
             0x00, 0x00, 0x00, 0x00, 0x01, 0x68, 0x3D, 0xD4, 0x19, 0x86,
-            0xFE, 0xB3, 0xF9, 0x57, 0xAF, 0x8B, 0x6F, 0x46, 0x79, 0x77
+            0xFE, 0xB3, 0xF9, 0x57, 0xAF, 0x8B, 0x6F, 0x46, 0x79, 0x77,
         ]
 
         let base32String = "00000001D0YX86C6ZTSZJNXFHDQMCYBQ"
@@ -194,7 +194,7 @@ struct Base32Tests {
             "W": 0x1c, "w": 0x1c,
             "X": 0x1d, "x": 0x1d,
             "Y": 0x1e, "y": 0x1e,
-            "Z": 0x1f, "z": 0x1f
+            "Z": 0x1f, "z": 0x1f,
         ]
 
         for (char, value) in table {

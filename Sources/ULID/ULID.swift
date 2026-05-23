@@ -39,17 +39,17 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible, Se
             $0.copyBytes(from: data.dropFirst(4))
         }
     }
-    
+
     /// Create a ULID from a timestamp and a random part.
     ///
     /// - Parameters:
     ///   - timestamp: Specify the timestamp as `Date`.
     ///   - data: Data representation of the random part of the ULID.
     /// - Returns: **nil** if the `data` is less than 80 bits or 10 bytes in size.
-    public init?(timestamp: Date = Date(), randomPartData data: Data){
+    public init?(timestamp: Date = Date(), randomPartData data: Data) {
         let randomDataInBytes = 10
         guard data.count >= randomDataInBytes else { return nil }
-        
+
         withUnsafeMutableBytes(of: &ulid) { (buffer) in
             var i = 0
             var millisec = UInt64(timestamp.timeIntervalSince1970 * 1000.0).bigEndian
@@ -59,13 +59,13 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible, Se
                     i += 1
                 }
             }
-            var randomPart:Data = Data()
-            if data.count > randomDataInBytes{
+            var randomPart: Data = Data()
+            if data.count > randomDataInBytes {
                 randomPart = data.prefix(randomDataInBytes)
-            }else{
+            } else {
                 randomPart = data
             }
-            
+
             withUnsafeBytes(of: &randomPart) {
                 for j in 0 ..< 10 {
                     buffer[i] = $0[j]
