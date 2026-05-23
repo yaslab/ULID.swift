@@ -10,52 +10,37 @@ jobs:
   test-on-macos:
     strategy:
       matrix:
-        xcode-version: ['16.0', '15.4', '15.2', '14.3.1']
-    runs-on: macos-latest
-    timeout-minutes: 3
+        xcode-version: ['26.5', '26.3']
+    runs-on: macos-26
+    timeout-minutes: 5
     env:
       DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode-version }}.app
     steps:
-      - uses: actions/checkout@v4
-      - name: Run swift build
-        run: swift build
+      - uses: actions/checkout@v6
       - name: Run swift test
         run: swift test
 
-  test-on-linux-swift-5:
+  test-on-linux:
     strategy:
       matrix:
-        swift-version: ['5.10', '5.9', '5.8']
+        swift-version: ['6.3', '6.2', '6.1', '6.0']
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - name: Install Swift ${{ matrix.swift-version }}
+      - uses: actions/checkout@v6
+      - name: Install Dependencies
         run: |
-          curl -L https://swiftlang.github.io/swiftly/swiftly-install.sh | bash -s -- -y
-          swiftly install ${{ matrix.swift-version }}
-      - name: Run swift --version
-        run: swift --version
-      - name: Run swift build
-        run: swift build
-      - name: Run swift test
-        run: swift test
-
-  test-on-linux-swift-6:
-    strategy:
-      matrix:
-        swift-version: ['6.0']
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    steps:
-      - uses: actions/checkout@v4
+          sudo apt-get update
+          sudo apt-get -y install libcurl4-openssl-dev
       - name: Install Swift ${{ matrix.swift-version }}
-        run: |
-          curl -L https://swiftlang.github.io/swiftly/swiftly-install.sh | bash -s -- -y
-          swiftly install ${{ matrix.swift-version }}
-      - name: Run swift --version
-        run: swift --version
-      - name: Run swift build
-        run: swift build -Xswiftc "-swift-version" -Xswiftc "6"
+        run: >
+          curl -O https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz &&
+          tar zxf swiftly-$(uname -m).tar.gz &&
+          ./swiftly init --assume-yes --skip-install &&
+          . "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/env.sh" &&
+          swiftly install --use ${{ matrix.swift-version }}
       - name: Run swift test
-        run: swift test -Xswiftc "-swift-version" -Xswiftc "6"
+        run: |
+          . "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/env.sh"
+          swift --version
+          swift test
