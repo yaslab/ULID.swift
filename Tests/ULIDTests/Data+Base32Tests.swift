@@ -20,129 +20,46 @@ struct Base32Tests {
     @Test func testEncodeBase32() {
         let expected = "00000001D0YX86C6ZTSZJNXFHDQMCYBQ"
 
-        let bytes: [UInt8] = [
+        let data = Data([
             0x00, 0x00, 0x00, 0x00, 0x01, 0x68, 0x3D, 0xD4, 0x19, 0x86,
             0xFE, 0xB3, 0xF9, 0x57, 0xAF, 0x8B, 0x6F, 0x46, 0x79, 0x77,
-        ]
-        let data = Data(bytes)
+        ])
 
         #expect(expected == data.base32EncodedString())
     }
 
-    @Test func testEncode1() {
-        let bytes: [UInt8] = [
-            0b11111000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,
+    @Test(
+        arguments: [
+            ("Z0000000", [0b11111000, 0b00000000, 0b00000000, 0b00000000, 0b00000000]),
+            ("0Z000000", [0b00000111, 0b11000000, 0b00000000, 0b00000000, 0b00000000]),
+            ("00Z00000", [0b00000000, 0b00111110, 0b00000000, 0b00000000, 0b00000000]),
+            ("000Z0000", [0b00000000, 0b00000001, 0b11110000, 0b00000000, 0b00000000]),
+            ("0000Z000", [0b00000000, 0b00000000, 0b00001111, 0b10000000, 0b00000000]),
+            ("00000Z00", [0b00000000, 0b00000000, 0b00000000, 0b01111100, 0b00000000]),
+            ("000000Z0", [0b00000000, 0b00000000, 0b00000000, 0b00000011, 0b11100000]),
+            ("0000000Z", [0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00011111]),
         ]
+    )
+    func testEncode(expected: String, bytes: [UInt8]) {
         let data = Data(bytes)
-
-        #expect("Z0000000" == data.base32EncodedString())
+        #expect(expected == data.base32EncodedString())
     }
 
-    @Test func testEncode2() {
-        let bytes: [UInt8] = [
-            0b00000111, 0b11000000, 0b00000000, 0b00000000, 0b00000000,
+    @Test(
+        arguments: [
+            ("GG======", [0b10000100]),
+            ("GGGG====", [0b10000100, 0b00100001]),
+            ("GGGGG===", [0b10000100, 0b00100001, 0b00001000]),
+            ("GGGGGGG=", [0b10000100, 0b00100001, 0b00001000, 0b01000010]),
         ]
+    )
+    func testEncodePad(expected: String, bytes: [UInt8]) {
         let data = Data(bytes)
-
-        #expect("0Z000000" == data.base32EncodedString())
-    }
-
-    @Test func testEncode3() {
-        let bytes: [UInt8] = [
-            0b00000000, 0b00111110, 0b00000000, 0b00000000, 0b00000000,
-        ]
-        let data = Data(bytes)
-
-        #expect("00Z00000" == data.base32EncodedString())
-    }
-
-    @Test func testEncode4() {
-        let bytes: [UInt8] = [
-            0b00000000, 0b00000001, 0b11110000, 0b00000000, 0b00000000,
-        ]
-        let data = Data(bytes)
-
-        #expect("000Z0000" == data.base32EncodedString())
-    }
-
-    @Test func testEncode5() {
-        let bytes: [UInt8] = [
-            0b00000000, 0b00000000, 0b00001111, 0b10000000, 0b00000000,
-        ]
-        let data = Data(bytes)
-
-        #expect("0000Z000" == data.base32EncodedString())
-    }
-
-    @Test func testEncode6() {
-        let bytes: [UInt8] = [
-            0b00000000, 0b00000000, 0b00000000, 0b01111100, 0b00000000,
-        ]
-        let data = Data(bytes)
-
-        #expect("00000Z00" == data.base32EncodedString())
-    }
-
-    @Test func testEncode7() {
-        let bytes: [UInt8] = [
-            0b00000000, 0b00000000, 0b00000000, 0b00000011, 0b11100000,
-        ]
-        let data = Data(bytes)
-
-        #expect("000000Z0" == data.base32EncodedString())
-    }
-
-    @Test func testEncode8() {
-        let bytes: [UInt8] = [
-            0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00011111,
-        ]
-        let data = Data(bytes)
-
-        #expect("0000000Z" == data.base32EncodedString())
-    }
-
-    @Test func testEncodePad1() {
-        let bytes: [UInt8] = [
-            0b10000100
-        ]
-        let data = Data(bytes)
-
-        #expect("GG======" == data.base32EncodedString())
-    }
-
-    @Test func testEncodePad2() {
-        let bytes: [UInt8] = [
-            0b10000100, 0b00100001,
-        ]
-        let data = Data(bytes)
-
-        #expect("GGGG====" == data.base32EncodedString())
-    }
-
-    @Test func testEncodePad3() {
-        let bytes: [UInt8] = [
-            0b10000100, 0b00100001, 0b00001000,
-        ]
-        let data = Data(bytes)
-
-        #expect("GGGGG===" == data.base32EncodedString())
-    }
-
-    @Test func testEncodePad4() {
-        let bytes: [UInt8] = [
-            0b10000100, 0b00100001, 0b00001000, 0b01000010,
-        ]
-        let data = Data(bytes)
-
-        #expect("GGGGGGG=" == data.base32EncodedString())
+        #expect(expected == data.base32EncodedString())
     }
 
     @Test func testEncodeNoPad() {
-        let bytes: [UInt8] = [
-            0b10000100
-        ]
-        let data = Data(bytes)
-
+        let data = Data([0b10000100])
         #expect("GG" == data.base32EncodedString(padding: false))
     }
 
@@ -150,19 +67,19 @@ struct Base32Tests {
     // MARK: Decode
 
     @Test func testDecodeBase32() throws {
-        let expected: [UInt8] = [
+        let expected = Data([
             0x00, 0x00, 0x00, 0x00, 0x01, 0x68, 0x3D, 0xD4, 0x19, 0x86,
             0xFE, 0xB3, 0xF9, 0x57, 0xAF, 0x8B, 0x6F, 0x46, 0x79, 0x77,
-        ]
+        ])
 
         let base32String = "00000001D0YX86C6ZTSZJNXFHDQMCYBQ"
         let data = try #require(Data(base32Encoded: base32String))
 
-        #expect(expected == Array(data))
+        #expect(expected == data)
     }
 
-    @Test func testDecodeTable() throws {
-        let table: [Character: UInt8] = [
+    @Test(
+        arguments: [
             "0": 0x00, "O": 0x00, "o": 0x00,
             "1": 0x01, "I": 0x01, "i": 0x01, "L": 0x01, "l": 0x01,
             "2": 0x02,
@@ -196,21 +113,19 @@ struct Base32Tests {
             "Y": 0x1e, "y": 0x1e,
             "Z": 0x1f, "z": 0x1f,
         ]
-
-        for (char, value) in table {
-            let data = try #require(Data(base32Encoded: String(char) + "0"))
-            try #require(data.count == 1)
-            #expect(data[0] == (value << 3))
-        }
+    )
+    func testDecodeTable(char: Character, value: UInt8) throws {
+        let data = try #require(Data(base32Encoded: String(char) + "0"))
+        try #require(data.count == 1)
+        #expect(data[0] == (value << 3))
     }
 
-    @Test func testDecodeInvalidCharacter() {
-        let invalidCharacters = ["U", "u", "*", "~", "$", "="]
-
-        for char in invalidCharacters {
-            let data = Data(base32Encoded: char + "0")
-            #expect(data == nil)
-        }
+    @Test(
+        arguments: ["U", "u", "*", "~", "$", "="]
+    )
+    func testDecodeInvalidCharacter(char: Character) {
+        let data = Data(base32Encoded: String(char) + "0")
+        #expect(data == nil)
     }
 
     @Test func testDecodePadding() throws {
