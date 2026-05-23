@@ -88,12 +88,6 @@ let package = Package(
 )
 ```
 
-### CocoaPods
-
-```
-pod 'ULID.swift', '~> 1.3.1'
-```
-
 ## License
 
-ULID.swift is released under the MIT license. See the [LICENSE](https://github.com/yaslab/ULID.swift/blob/master/LICENSE) file for more info.
+ULID.swift is released under the MIT license. See the [LICENSE](https://github.com/yaslab/ULID.swift/blob/main/LICENSE) file for more info.
