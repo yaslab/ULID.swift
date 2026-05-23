@@ -16,7 +16,7 @@ struct ULIDTests {
 
     @Test func testGenerateTimestamp() {
         let expected: [UInt8] = [
-            0x01, 0x68, 0x3D, 0x17, 0x73, 0x09, 0xE5
+            0x01, 0x68, 0x3D, 0x17, 0x73, 0x09, 0xE5,
         ]
 
         let timestamp = Date(timeIntervalSince1970: 1547213173.513)
@@ -35,17 +35,17 @@ struct ULIDTests {
 
         #expect("01D0YHEWR9" == actual.ulidString.prefix(10))
     }
-    
+
     @Test func testGenerateTimestampAndRandomnes() throws {
         let timestamp = Date(timeIntervalSince1970: 1547213173.513)
         let uuidCorrectSize: [UInt8] = [
-            0x01, 0x68, 0x3D, 0x17, 0x73, 0x09, 0x69, 0xF4, 0xA2, 0xB1
+            0x01, 0x68, 0x3D, 0x17, 0x73, 0x09, 0x69, 0xF4, 0xA2, 0xB1,
         ]
-        
+
         let actual = try #require(ULID(timestamp: timestamp, randomPartData: Data(uuidCorrectSize)))
 
         #expect(timestamp == actual.timestamp)
-        
+
         #expect(0x01 == actual.ulid.6)
         #expect(0x68 == actual.ulid.7)
         #expect(0x3D == actual.ulid.8)
@@ -62,13 +62,13 @@ struct ULIDTests {
         let timestamp = Date(timeIntervalSince1970: 1547213173.513)
         // Test if initializer discards bytes beyond 10 bytes
         let uuidTooBigSize: [UInt8] = [
-            0x01, 0x68, 0x3D, 0x17, 0x73, 0x09, 0x69, 0xF4, 0xA2, 0xB1, 0x99, 0x55
+            0x01, 0x68, 0x3D, 0x17, 0x73, 0x09, 0x69, 0xF4, 0xA2, 0xB1, 0x99, 0x55,
         ]
-        
+
         let actual = try #require(ULID(timestamp: timestamp, randomPartData: Data(uuidTooBigSize)))
 
         #expect(timestamp == actual.timestamp)
-        
+
         #expect(0x01 == actual.ulid.6)
         #expect(0x68 == actual.ulid.7)
         #expect(0x3D == actual.ulid.8)
@@ -86,7 +86,7 @@ struct ULIDTests {
         let uuidTooSmallSize: [UInt8] = [
             0x01, 0x68, 0x3D, 0x17, 0x73,
         ]
-        
+
         let actual = ULID(timestamp: timestamp, randomPartData: Data(uuidTooSmallSize))
 
         #expect(actual == nil)
@@ -94,7 +94,7 @@ struct ULIDTests {
 
     @Test func testGenerateRandomness() {
         let timestamp = Date(timeIntervalSince1970: 1547213173.513)
-        var generator = RandomNumberGeneratorStub(value: 0x1122334455667788)
+        var generator = RandomNumberGeneratorStub(value: 0x1122_3344_5566_7788)
         let actual = ULID(timestamp: timestamp, generator: &generator)
 
         #expect(timestamp == actual.timestamp)
@@ -130,7 +130,7 @@ struct ULIDTests {
     @Test func testParseULIDData() throws {
         let expected: [UInt8] = [
             0x01, 0x68, 0x3D, 0x17, 0x73, 0x09, 0xE5, 0x2D,
-            0xE2, 0x56, 0xBA, 0xB4, 0xC3, 0x4C, 0x07, 0x57
+            0xE2, 0x56, 0xBA, 0xB4, 0xC3, 0x4C, 0x07, 0x57,
         ]
 
         let actual = try #require(ULID(ulidData: Data(expected)))
