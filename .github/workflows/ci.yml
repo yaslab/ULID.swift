@@ -44,3 +44,14 @@ jobs:
           . "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/env.sh"
           swift --version
           swift test
+  linux-android:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: "Test Swift Package on Android"
+        uses: skiptools/swift-android-action@2044b79660f201ccef8cbce62877e4ec5409f9c8 # 2.9.5
+        with:
+          # Ubuntu runners low on space causes the emulator to fail to install
+          free-disk-space: true
