@@ -59,16 +59,12 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible, Se
                     i += 1
                 }
             }
-            var randomPart: Data = Data()
-            if data.count > randomDataInBytes {
-                randomPart = data.prefix(randomDataInBytes)
-            } else {
-                randomPart = data
-            }
 
-            withUnsafeBytes(of: &randomPart) {
-                for j in 0 ..< 10 {
-                    buffer[i] = $0[j]
+            let randomPart = data.prefix(randomDataInBytes)
+
+            randomPart.withUnsafeBytes { (randomBuffer: UnsafeRawBufferPointer) in
+                for j in 0 ..< randomDataInBytes {
+                    buffer[i] = randomBuffer[j]
                     i += 1
                 }
             }
@@ -77,36 +73,55 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible, Se
 
     /// Create a ULID with the given timestamp and random number generator.
     public init<T: RandomNumberGenerator>(timestamp: Date, generator: inout T) {
-        withUnsafeMutableBytes(of: &ulid) { (buffer) in
-            var i = 0
-            var millisec = UInt64(timestamp.timeIntervalSince1970 * 1000.0).bigEndian
-            withUnsafeBytes(of: &millisec) {
-                for j in 2 ..< 8 {
-                    buffer[i] = $0[j]
-                    i += 1
-                }
-            }
-            var random16 = UInt16.random(in: .min ... .max, using: &generator).bigEndian
-            withUnsafeBytes(of: &random16) {
-                for j in 0 ..< 2 {
-                    buffer[i] = $0[j]
-                    i += 1
-                }
-            }
-            var random64 = UInt64.random(in: .min ... .max, using: &generator).bigEndian
-            withUnsafeBytes(of: &random64) {
-                for j in 0 ..< 8 {
-                    buffer[i] = $0[j]
-                    i += 1
-                }
-            }
-        }
+        let millisec = UInt64(timestamp.timeIntervalSince1970 * 1000.0)
+        let r16 = UInt16.random(in: .min ... .max, using: &generator)
+        let r64 = UInt64.random(in: .min ... .max, using: &generator)
+
+        self.ulid = (
+            UInt8((millisec >> 40) & 0xFF),
+            UInt8((millisec >> 32) & 0xFF),
+            UInt8((millisec >> 24) & 0xFF),
+            UInt8((millisec >> 16) & 0xFF),
+            UInt8((millisec >> 8) & 0xFF),
+            UInt8(millisec & 0xFF),
+            UInt8((r16 >> 8) & 0xFF),
+            UInt8(r16 & 0xFF),
+            UInt8((r64 >> 56) & 0xFF),
+            UInt8((r64 >> 48) & 0xFF),
+            UInt8((r64 >> 40) & 0xFF),
+            UInt8((r64 >> 32) & 0xFF),
+            UInt8((r64 >> 24) & 0xFF),
+            UInt8((r64 >> 16) & 0xFF),
+            UInt8((r64 >> 8) & 0xFF),
+            UInt8(r64 & 0xFF)
+        )
     }
 
     /// Create a ULID with the given timestamp.
     public init(timestamp: Date = Date()) {
-        var g = SystemRandomNumberGenerator()
-        self.init(timestamp: timestamp, generator: &g)
+        var generator = SystemRandomNumberGenerator()
+        let millisec = UInt64(timestamp.timeIntervalSince1970 * 1000.0)
+        let r16 = UInt16.random(in: .min ... .max, using: &generator)
+        let r64 = UInt64.random(in: .min ... .max, using: &generator)
+
+        self.ulid = (
+            UInt8((millisec >> 40) & 0xFF),
+            UInt8((millisec >> 32) & 0xFF),
+            UInt8((millisec >> 24) & 0xFF),
+            UInt8((millisec >> 16) & 0xFF),
+            UInt8((millisec >> 8) & 0xFF),
+            UInt8(millisec & 0xFF),
+            UInt8((r16 >> 8) & 0xFF),
+            UInt8(r16 & 0xFF),
+            UInt8((r64 >> 56) & 0xFF),
+            UInt8((r64 >> 48) & 0xFF),
+            UInt8((r64 >> 40) & 0xFF),
+            UInt8((r64 >> 32) & 0xFF),
+            UInt8((r64 >> 24) & 0xFF),
+            UInt8((r64 >> 16) & 0xFF),
+            UInt8((r64 >> 8) & 0xFF),
+            UInt8(r64 & 0xFF)
+        )
     }
 
     /// Returns a raw binary data.
