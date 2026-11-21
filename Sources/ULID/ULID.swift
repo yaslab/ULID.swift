@@ -35,6 +35,11 @@ public struct ULID: Hashable, Equatable, Comparable, CustomStringConvertible, Se
         guard string.utf8.count == 26, let data = Data(base32Encoded: "000000" + string) else {
             return nil
         }
+        // 26 base32 characters hold 130 bits. The 2 extra bits end up in the
+        // 4th byte, which must be zero: the largest ULID is 7ZZZZZZZZZZZZZZZZZZZZZZZZZ.
+        guard data[data.startIndex + 3] == 0 else {
+            return nil
+        }
         withUnsafeMutableBytes(of: &ulid) {
             $0.copyBytes(from: data.dropFirst(4))
         }
