@@ -127,6 +127,16 @@ struct ULIDTests {
         #expect(actual == nil)
     }
 
+    @Test func testParseULIDStringOverflow() throws {
+        let max = try #require(ULID(ulidString: "7ZZZZZZZZZZZZZZZZZZZZZZZZZ"))
+        #expect(max.ulidString == "7ZZZZZZZZZZZZZZZZZZZZZZZZZ")
+
+        // Larger than 128 bits: must not wrap around to a different ULID.
+        #expect(ULID(ulidString: "8ZZZZZZZZZZZZZZZZZZZZZZZZZ") == nil)
+        #expect(ULID(ulidString: "80000000000000000000000000") == nil)
+        #expect(ULID(ulidString: "ZZZZZZZZZZZZZZZZZZZZZZZZZZ") == nil)
+    }
+
     @Test func testParseULIDData() throws {
         let expected: [UInt8] = [
             0x01, 0x68, 0x3D, 0x17, 0x73, 0x09, 0xE5, 0x2D,
